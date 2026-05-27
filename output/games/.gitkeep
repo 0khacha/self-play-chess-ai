@@ -1,0 +1,2 @@
+# This directory stores PGN files from self-play games.
+# Run `python self_play.py` to generate game files here.

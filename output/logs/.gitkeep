@@ -1,0 +1,2 @@
+# This directory stores training logs (.log, .csv) and charts (.png).
+# Generated at runtime by train.py and self_play.py.

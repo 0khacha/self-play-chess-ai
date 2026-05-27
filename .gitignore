@@ -1,0 +1,65 @@
+# --- Python ----------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.pyo
+*.pyd
+
+# --- Virtual environments ---------------------------------------------
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- PyTorch / ML artifacts ------------------------------------------
+# Keep model directory structure but not the actual weights
+output/models/*.pt
+output/models/*.pth
+output/models/*.ckpt
+
+# Keep games/logs directories tracked but not contents
+output/raw/*.json
+output/logs/*.log
+output/logs/*.csv
+output/logs/*.png
+
+# --- IDE / Editor ----------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Jupyter ---------------------------------------------------------
+.ipynb_checkpoints/
+*.ipynb
+
+# --- Pytest / Coverage -----------------------------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# --- Type checking ---------------------------------------------------
+.mypy_cache/
+.pytype/
+
+# --- Stockfish binary ------------------------------------------------
+stockfish/
+*.exe
+# (except keep the directory placeholder)
+
+# --- OS --------------------------------------------------------------
+.DS_Store
+desktop.ini

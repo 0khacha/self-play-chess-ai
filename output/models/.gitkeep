@@ -1,0 +1,3 @@
+# This directory stores trained model checkpoints (.pt files).
+# Checkpoint files are excluded from version control via .gitignore.
+# Run `python train.py` to generate a checkpoint here.
