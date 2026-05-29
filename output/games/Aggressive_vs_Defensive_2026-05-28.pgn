@@ -1,0 +1,220 @@
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 c5 2. Bc4 e6 3. Qg4 Nc6 4. Nc3 Nf6 5. Qxg7 a6 6. Qxh8 e5 7. Bxf7+ Ke7 8. Bd5 d6 9. Bxc6 b5 10. Bxb5 Bb7 11. Bc6 h5 12. Nd5+ Ke6 13. Nxf6 Be7 14. Bd7+ Kf7 15. Kd1 Bxf6 16. Be6+ Kxe6 17. Qh7 Be7 18. Qh8 a5 19. Qf6+ Bxf6 20. d3 Ke7 21. Ke2 Ke6 22. Nf3 Be7 23. Ng5+ Kf6 24. Nf7 Kg6 25. Nxe5+ Kg7 26. Nd7 Bf6 27. Rf1 Kh8 28. Nf8 Kg8 29. e5 d5 30. exf6 Qd6 31. f7+ Kxf8 32. Bg5 Qe7+ 33. Bxe7+ Kxe7 34. f8=Q+ Ke6 35. Qxc5 Kf5 36. Qb4 Ke5 37. Qe7+ Kf5 38. Qc7 Kg6 39. Qd8 Ba6 40. Qd7 Kg5 41. Qc7 Kf6 42. Qb6+ Ke7 43. Qxa6 Ke8 44. g4 Ke7 45. Qb5 Ke6 46. Qb4 Kf6 47. Qe7+ Kg6 48. Qe6+ Kg5 49. Qe5+ Kh6 50. Qd4 Kg5 51. Qxd5+ Kf6 52. Qc5 Kf7 53. Qb4 Rg8 54. Qe7+ Kg6 55. Qe4+ Kg7 56. Qc4 Kg6 57. Qe4+ Kf6 58. Qc4 Kg6 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Nf3 d6 3. Ng5 Nf6 4. Nxf7 Nc6 5. Nxe5 h5 6. Nf7 Be6 7. Ne5 d5 8. Nf7 Qd6 9. Bb5 Bf5 10. Bxc6+ Bd7 11. Ne5 Be7 12. Nxd7 Qxc6 13. exd5 g6 14. dxc6 O-O-O 15. Qxh5 Bd6 16. Nxf6 a6 17. Qg4+ Rd7 18. Rf1 b5 19. Nd5 Rg8 20. Nxc7 a5 21. Ne6 Rf7 22. Qg5 Rh7 23. Qd8+ Rxd8 24. Nf4 Rh6 25. Ne6 g5 26. Nf4 Rh5 27. Nd5 Bc5 28. Nb4 Rf8 29. Nd3 Kc7 30. Ne5 Kd8 31. Nd7 Ke7 32. Nxf8 Ke8 33. d3 Kd8 34. Bxg5+ Kc7 35. Bd8+ Kxc6 36. Bc7 Kxc7 37. f4 Kc6 38. h3 Kb7 39. Ke2 Kc8 40. f5 Kb7 41. f6 Kc6 42. c4 Bd6 43. Rf4 Kc5 44. Nc3 Be5 45. Re1 Kd6 46. d4 Kc6 47. Re4 Kb7 48. dxe5 Ka7 49. e6 Kb7 50. e7 Kc8 51. h4 Kc7 52. e8=Q Rh6 53. Qf7+ Kc6 54. Qb7+ Kd6 55. Qa8 Kc5 56. Qxa5 Rh5 57. Qa6 Rh6 58. Qxb5+ Kd6 59. Qa4 Kc5 60. Qa5+ Kd6 61. Qa4 Kc5 62. Qb5+ Kd6 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1-0"]
+[Termination "checkmate"]
+
+1. Nf3 Nc6 2. e4 e5 3. Nc3 Nf6 4. Nd4 Bc5 5. Nxc6 d6 6. Qh5 O-O 7. Nd5 Re8 8. Nxf6+ Qxf6 9. Qg5 Be6 10. Qxf6 g6 11. Ne7+ Rxe7 12. Qh8+ Kxh8 13. Bb5 a6 14. Bc6 b5 15. Bxb5 c6 16. Bxc6 d5 17. Bb5 Rd7 18. Bxd7 Bf5 19. exd5 Rb8 20. Be8 h5 21. d6 a5 22. Rf1 Bd7 23. f3 f6 24. d3 f5 25. f4 Bc6 26. fxe5 Kh7 27. e6 g5 28. e7 Kh6 29. g4 Kg7 30. Rxf5 Kh6 31. Rf6+ Kg7 32. Rh6 Kxh6 33. gxh5 Bxd6 34. b3 Be5 35. Bf4 Kg7 36. Bxe5+ Kh6 37. Bg6 Rb5 38. e8=Q Rc5 39. Bf5 Bb7 40. Qg6# { checkmate } 1-0
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1-0"]
+[Termination "checkmate"]
+
+1. Nc3 e5 2. Ne4 Nc6 3. Nf6+ Nxf6 4. Nf3 d5 5. Nxe5 Be7 6. Nd7 b6 7. Nxf6+ Kf8 8. d4 Bb7 9. Ng4 f5 10. Bf4 g6 11. Nf6 Qd7 12. Bh6+ Kf7 13. Ng8 Rb8 14. Bg7 Bd8 15. Bxh8 Kf8 16. e3 Qe6 17. Qg4 Ne5 18. Qxf5+ Qxf5 19. dxe5 Qe6 20. Be2 g5 21. Bg4 Qf5 22. Rd1 Qe6 23. Bh5 Qf5 24. Bf7 Be7 25. Be6 Qxe6 26. c4 Qf5 27. cxd5 Qe6 28. dxe6 Bd6 29. g4 c5 30. e7+ Ke8 31. Rf1 h5 32. f3 Kd7 33. Rxd6+ Kc8 34. Rd5 Kc7 35. Rd6 Bc8 36. Rd5 a5 37. Rd6 Kb7 38. Rd3 Bd7 39. e4 Kc8 40. Rd4 Kc7 41. Rd5 Bc8 42. Rd6 Bd7 43. Rxd7+ Kc6 44. Rc7+ Kxc7 45. e6 Kc6 46. e5 Kb7 47. h3 Kc8 48. gxh5 Kb7 49. Bg7 Ka6 50. Bh8 Kb7 51. Bf6 Ka7 52. e8=Q Kb7 53. e7 Ka7 54. e6 Kb7 55. Bh8 Ka7 56. Qf7 Kb7 57. e8=Q+ Ka8 58. Qf6 b5 59. Qff7 Rc8 60. Qee7 Rc7 61. Qff6 Rd7 62. Qh6 Rxe7 63. Qg7 Rxe6+ 64. Qe5 Rf6 65. f4 Rf5 66. Qe6 Re5+ 67. Qxe5 Ka7 68. f5 Kb7 69. Qg7+ Ka6 70. f6 Kb6 71. Qh6 Kb7 72. f7 Ka7 73. f8=Q Kb7 74. Qxc5 Kb8 75. Rf6 Ka8 76. Rf8+ Kb7 77. Qe5 Ka7 78. Qee6 Kb7 79. Qf5 Ka7 80. Rf7+ Ka8 81. Rf8+ Ka7 82. Re8 Kb7 83. Qe5 Ka7 84. a4 Kb7 85. axb5 Ka7 86. Qhxg5 Kb7 87. Re7+ Kc8 88. Qg6 Kd8 89. Re8+ Kd7 90. Qef5+ Kc7 91. Qh7+ Kb6 92. Qe5 a4 93. Qhc7# { checkmate } 1-0
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. Nf3 d5 2. Ne5 Nc6 3. Nxf7 Nf6 4. Ne5 h5 5. Nf7 Bf5 6. Ne5 Be6 7. Nxc6 a6 8. Nd4 c5 9. Nc6 Qb6 10. Ne5 Qb5 11. Nf7 Nd7 12. Nd8 g6 13. Nc3 Kxd8 14. Nxd5 Ra7 15. Nb4 Bg7 16. Nd5 Nb6 17. Nb4 a5 18. Nd5 Kd7 19. Nb4 Kd6 20. Nd5 Ke5 21. Nb4 Kf5 22. Nd5 g5 23. Nb4 Rf8 24. Nd5 Qd7 25. Nb4 Ke5 26. Nd5 Bxd5 27. h3 Kd6 28. f4 Ra6 29. fxg5 Qd8 30. g6 Bf6 31. g7 Kc6 32. g8=Q e6 33. Qh8 Re8 34. Qxf6 Qc8 35. Qh6 Rd8 36. Qf4 Rd7 37. Qg4 Re7 38. Qe4 Rd7 39. Qd4 e5 40. Qxd5+ Kxd5 41. g4 Kd6 42. gxh5 Re7 43. h6 Rd7 44. h7 Kc6 45. h8=Q Re7 46. Qxe5 Rd7 47. Qg7 Re7 48. Qh8 Rd7 49. Qe5 Re7 50. Qe4+ Nd5 51. Qc4 Re8 52. Qxd5+ Kxd5 53. Bg2+ Ke5 54. Bd5 Kf5 55. Bc4 Ke5 56. Bb5 Kf5 57. Ba4 Kg6 58. Bc6 Kg7 59. Bd7 Kf6 60. Bf5 Ke7 61. Bg6 Kf8 62. Kf1 Ke7 63. Bf7 Kf8 64. Bd5 Kg7 65. Bc4 Qe6 66. Bd5 Kg6 67. Bxe6 Kg5 68. Bd7 Kf6 69. Ba4 Kf5 70. Bb5 Ke5 71. Bd3 Kf6 72. Bc4 Kf5 73. Bb5 Ke5 74. Bd3 Kf6 75. Kf2 Ke7 76. a3 Ke6 77. Re1 Kd6 78. Rh1 Kc6 79. b4 Kd6 80. bxc5+ Kc6 81. e4 Kxc5 82. e5 Kc6 83. e6 Kd6 84. e7 Kc6 85. Qf1 Rxe7 86. Kg3 Kd6 87. Rh2 Kc6 88. Rg2 Kd6 89. Kg4 Kc6 90. Qf4 Kd5 91. Qf7+ Kc5 92. Qf6 Rf7 93. Qh6 Rff6 94. Qg5+ Rf5 95. Qg6 Rb6 96. Qf7 Rf1 97. Qf6 Rc6 98. Qh6 Kd5 99. Qf4 Kc5 100. Qf7 Kd6 101. Qf6+ Kd5 102. Qh6 Kc5 103. Qf4 b6 104. Qf7 Kd6 105. Qd7+ Kxd7 106. Bb2 Ke6 107. Bd4 Kf7 108. Bf6 b5 109. Bd4 Rd6 110. Bc5 Ke7 111. Bf2 Rd5 112. Rh2 Ke6 113. Rg2 Kd6 114. Rh2 Kc6 115. Rxf1 Kd6 116. h4 Kc6 117. c4 Kd6 118. cxb5 Ke6 119. a4 Ke7 120. b6 Ke8 121. b7 Kf8 122. b8=Q+ Kg7 123. Qc8 Kf6 124. Qb7 Ke6 125. Qc7 Re5 126. Qa7 Kf6 127. Qb8 Rf5 128. Qh8+ Kg6 129. Qa8 Kf6 130. Qd5 Kg6 131. Qxf5+ Kg7 132. Qf7+ Kxf7 133. Kf5 Kf8 134. Rh3 Ke8 135. Kf4 Kf8 136. Rh2 Ke7 137. Kf5 Kd6 138. Be3 Kc6 139. Rf4 Kd6 140. Bc4 Kc6 141. Rg4 Kd6 142. Rg6+ Kd7 143. Rf6 Kc7 144. Re6 Kd7 145. Re7+ Kxe7 146. Bb5 Kf8 147. Bc6 Kg8 148. Bf3 Kf7 149. Bd5+ Kg7 150. Bf7 Kxf7 151. h5 Ke7 152. h6 Kd6 153. h7 Kd5 154. h8=Q Kd6 155. Qh7 Kc6 156. Qf7 Kd6 157. Qd7+ Kxd7 158. Rg2 Kd6 159. Rg3 Kc6 160. Kf6 Kd6 161. Rg4 Kc6 162. Rg8 Kd6 163. Rg6 Kc6 164. Rh6 Kd6 165. Rh7 Kc6 166. Rf7 Kd6 167. Rf8 Kc6 168. Rh8 Kb7 169. Rd8 Ka6 170. Rh8 Kb7 171. Rd8 Kc7 172. Re8 Kd7 173. Re7+ Kd8 174. Re8+ Kd7 175. Re7+ Kd6 176. Rb7 Kd5 177. Rb6 Kc4 178. Rb7 Kd5 179. Rb8 Kd6 180. Ra8 Kc6 181. Ra7 Kd6 182. Ra6+ Kd5 183. Ra7 Kd6 184. Ra8 Kc6 185. Rb8 Kc7 186. Rd8 Kb7 187. Rd5 Kc7 188. Rd8 Kb7 189. Rh8 Kc7 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 d6 2. Bc4 e5 3. Nf3 Nc6 4. Bd5 f6 5. Bxc6+ Bd7 6. Bxd7+ Qxd7 7. Nxe5 c5 8. Nf7 Be7 9. Qh5 g6 10. Qg5 Nh6 11. Qe5 f5 12. Qxd6 Qxd6 13. Ne5 b6 14. Nf7 g5 15. Ne5 Qe6 16. Nf7 Qd7 17. Ne5 Qc8 18. Nf7 Qb7 19. exf5 Bf8 20. Nxh6 Bd6 21. f6 Kf8 22. Ng4 Qa6 23. Nh6 Rg8 24. Ng4 Kf7 25. Ne5+ Kxf6 26. Nf7 Kf5 27. Ne5 h5 28. Nf7 Be5 29. Nxe5 Kxe5 30. Nc3 Kf5 31. Nd5 Ke6 32. Nf6 Kf5 33. Nd5 Ke5 34. Nb4 b5 35. Nd5 Ke6 36. Nb4 Kf7 37. Nd5 Ke8 38. Nb4 Kd8 39. Nd3 Kc7 40. Nxc5 Kc8 41. Nb3 Kb7 42. Nc5+ Kc6 43. Nb3 Kd6 44. Nc5 Kc6 45. Nb3 Kc7 46. f3 Kd8 47. f4 Ke7 48. fxg5 Kd8 49. O-O Kc7 50. Rf7+ Kd8 51. Rb7 Ke8 52. Rd7 Kxd7 53. g6 Rh8 54. g7 Kd6 55. gxh8=Q Kc6 56. Qe5 Kb7 57. Qd5+ Kc8 58. Qc6+ Kd8 59. Qb6+ Ke7 60. Qc5+ Ke6 61. Qb4 Kf6 62. Qc5 Kg6 63. Qxb5 Kf6 64. Qc5 Kg6 65. Qb4 Kf6 66. Qc5 Ke6 67. Qb4 Kf5 68. Qe7 Kg6 69. Qd7 Kh6 70. Qd8 Kg7 71. Qc8 Kf6 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Bb5 Nc6 3. Bxc6 a6 4. Qf3 Nf6 5. Qxf6 b5 6. Qxd8+ Kxd8 7. Bxa8 Bb7 8. Nc3 d6 9. Nd5 c5 10. Nb4 a5 11. Nf3 f6 12. Nd5 f5 13. exf5 Be7 14. Nb4 Bf6 15. Nd5 h6 16. Nb4 Rf8 17. Nd5 Kd7 18. Nb4 h5 19. Nd5 Bc6 20. Nb4 d5 21. Nxd5 Kd6 22. Nb4 Re8 23. Nd5 Bb7 24. Nb4 g6 25. Nd5 Bc6 26. Nb4 Bb7 27. Nd3 Bc8 28. Bd5 Ke7 29. Be6 Bb7 30. Bd5 Kd6 31. a3 Ke7 32. Be6 Kd6 33. Nxc5 Ke7 34. Nb3 Kd6 35. Bd7 Ke7 36. Nc5 Kd6 37. Nh4 Ke7 38. Nxg6+ Kd6 39. Nf8 Kxc5 40. Be6 Bc8 41. Nd7+ Kd6 42. Nf8 Ke7 43. d3 Kd6 44. Bd5 Be7 45. Be6 Bxf8 46. Bg5 Be7 47. Bf4 Bd8 48. f6 Be7 49. Bd7 Bxf6 50. Be6 Kc5 51. Bxe5 Bxe6 52. Bd6+ Kxd6 53. Rc1 Ke5 54. f4+ Kf5 55. Rb1 Bf7+ 56. Kd1 Kg6 57. f5+ Kg5 58. Rf1 Bg6 59. Rf4 Kh6 60. Re4 Kg5 61. Re5 Re7 62. Re6 Rxe6 63. h3 Be5 64. f6 Rd6 65. f7 Rd5 66. f8=Q Rd8 67. Qg7 Rd5 68. Qh8 Kf5 69. Qxe5+ Kxe5 70. g4 Kf6 71. gxh5 Kf5 72. h6 Ke5 73. Ke1 Kf5 74. h7 Kf6 75. h4 Ke5 76. h5 Kf5 77. h8=Q Ke6 78. Qe5+ Rxe5+ 79. Kd2 Kf5 80. h6 Kg5 81. h7 Kh5 82. h8=Q+ Kg5 83. Qxe5+ Kh4 84. Qc5 Kg4 85. Qc6 Kh5 86. Qc5+ Kh6 87. Qc6 Kg5 88. Qc5+ Kh6 89. Qc6 Kg5 90. Qc5+ { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Bb5 Bd6 3. Bc6 Nxc6 4. Qh5 Nf6 5. Qxf7+ Kxf7 6. Nf3 Kg8 7. Nxe5 Nxe5 8. Nc3 a6 9. Nd5 b5 10. Nb4 Bb7 11. Nd5 c6 12. Nxf6+ Qxf6 13. f3 Qf5 14. exf5 g6 15. fxg6 c5 16. g7 Ng6 17. gxh8=Q+ Kxh8 18. Rf1 Ne5 19. f4 Kg8 20. fxe5 h5 21. exd6 Kh8 22. Rf4 Kg8 23. Rc4 Kf7 24. Rxc5 Kf6 25. Rxh5 Ke6 26. Rh4 Kxd6 27. c4 Kc6 28. Rh3 Kc5 29. Rh6 a5 30. Rh7 d6 31. cxb5 Kb6 32. Rh6 Kxb5 33. Rh7 d5 34. Rh6 Rh8 35. Rh5 Rg8 36. Rh4 Rg7 37. Rh8 Rg6 38. Rh5 Rf6 39. Rh4 Rf5 40. a3 Rf1+ 41. Kxf1 Bc8 42. b4 Bd7 43. Rg4 a4 44. Rf4 Kc6 45. Rg4 Kd6 46. Rh4 Kc6 47. Bb2 Kb7 48. Rf4 Ka6 49. Rf5 Kb6 50. Rf6+ Kb7 51. Rh6 Kc8 52. Rf6 Kd8 53. Rf7 Ke8 54. Rf8+ Ke7 55. Bd4 Kd6 56. Rf5 Kc6 57. Rf7 Kb7 58. Rf8 Ka6 59. Rf5 Kb7 60. Rf7 Ka6 61. Rf8 Kb7 62. Rf5 Ka6 63. Rf6+ Kb7 64. Rf7 Ka6 65. Rf6+ Kb7 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1/2-1/2"]
+[Termination "stalemate"]
+
+1. Nf3 e5 2. Nxe5 Nc6 3. Nxf7 Nf6 4. Ne5 d6 5. Nf7 Be7 6. Nxd8 h5 7. d4 Nb8 8. Bg5 O-O 9. Bxf6 c6 10. Bxg7 d5 11. Bh8 Nd7 12. Rg1 Nb6 13. c3 Bg5 14. Qd2 c5 15. Qc2 Bf6 16. Bxf6 Re8 17. Bh8 Re6 18. dxc5 Rf6 19. Kd2 Rf7 20. e4 Bf5 21. Ke3 Rxd8 22. e5 Rf6 23. h3 Be6 24. Bxf6 Rd7 25. Be2 Bf5 26. f3 Be6 27. c6 Bf5 28. Bd8 Rf7 29. f4 bxc6 30. Bg4 Rf6 31. Bxh5 c5 32. Bf3 Rh6 33. Bxd5+ Kh8 34. Be4 a5 35. Bxf5 Rg6 36. a3 Rf6 37. Ke2 Kg7 38. e6 Rxf5 39. e7 Kf7 40. e8=Q+ Kxe8 41. g4 Kf8 42. g5 Ke8 43. Bxb6 Rf6 44. Bxc5 Kd7 45. Qb3 Rf5 46. Qb4 Ke8 47. Ra2 Kd8 48. Bb6+ Kd7 49. g6 Ke8 50. Rg2 Re5+ 51. Kd2 Rf5 52. Rg3 Rf6 53. Rf3 Kd7 54. g7 Rf5 55. g8=Q Kc6 56. Qg6+ Kd5 57. Qxa5+ Kc4 58. Qg7 Rf6 59. Qg8+ Re6 60. f5 Kb3 61. Qa7 Kc4 62. Qd7 Kb3 63. Qdd8 Kc4 64. Rf4+ Kb3 65. f6 Kxa2 66. Rf5 Kb3 67. Qg3 Kc4 68. Rc5+ Kb3 69. Qf2 Re5 70. Qf3 Re8 71. Qd6 Rd8 72. Qf4 Re8 73. a4 Rd8 74. Qe4 Rd7 75. Qed5+ Kxa4 76. Qe7 Rd6 77. Qe8+ Rc6 78. Bc7 { stalemate } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Aggressive"]
+[Black "Defensive"]
+[Result "1-0"]
+[Termination "checkmate"]
+
+1. Nf3 e5 2. e4 Nc6 3. Bb5 d5 4. Bxc6+ Bd7 5. exd5 f6 6. Nxe5 Ne7 7. Nxd7 a6 8. f3 b5 9. Bxa8 c6 10. Nc3 c5 11. Na4 f5 12. Naxc5 g6 13. d6 g5 14. dxe7 h5 15. Nxf8 Qxe7+ 16. Qe2 Qe6 17. Nb3 Rh7 18. Nd4 Kf7 19. Ndxe6 Kf6 20. Kd1 Kf7 21. d4 Kf6 22. Bd5 Kf7 23. Qc4 Kf6 24. Bxg5+ Kf7 25. Qc6 Kg8 26. Qa8 Rg7 27. Qa7 Rg6 28. f4 Rxg5 29. Qxa6 Kh8 30. Qc6 Kg8 31. Qa8 Rg6 32. Qa7 Rg5 33. Qe7 Rg6 34. Qd8 Rg5 35. fxg5 Kf7 36. Qd7+ Kg8 37. Ba8 Kh8 38. Qd8 Kg8 39. Qe8 Kh8 40. Qf7 f4 41. Qg7# { checkmate } 1-0
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Nc3 Qf6 3. f3 Bb4 4. d3 Qxf3 5. Be2 Bxc3+ 6. Qd2 Qxe4 7. Nf3 Qxd3 8. Qxc3 Qxe2+ 9. Kxe2 Nf6 10. h4 Nc6 11. Kd3 Nd4 12. Kc4 Nxc2 13. a4 Ne3+ 14. Kd3 Nfg4 15. Ke4 Nf2+ 16. Kxe3 Ne4 17. Rd1 Nd2 18. Bxd2 e4 19. Qd3 exd3 20. Bc3 d2 21. Kxd2 f6 22. Ke3 f5 23. b3 Rf8 24. b4 a6 25. Kd2 f4 26. Rac1 Rf7 27. Kd3 d5 28. Ke2 d4 29. Kd2 d3 30. Kxd3 Rf6 31. Ke4 Rf5 32. g3 Rf6 33. Rd3 g5 34. g4 gxh4 35. Rd4 Rc6 36. Kxf4 h3 37. Rcd1 h2 38. Ke3 h1=Q 39. Kd2 Qxf3 40. Kc2 Qf2+ 41. Kd3 Qe3+ 42. Kxe3 Bxg4 43. Kf4 Bf5 44. Kf3 Bd7 45. Ke3 Rc4 46. Kf2 Rxc3 47. Ke1 Rc4 48. Kf1 Rc3 49. Ke2 Rc4 50. Kf1 Rc3 51. R4d3 Rxd3 52. Ke2 Re3+ 53. Kf1 Re2 54. Kxe2 b5 55. Kf1 bxa4 56. Ke1 Be6 57. Kf1 h6 58. Ke2 a3 59. Ke3 Ra7 60. Kd3 a2 61. Ke4 a1=Q 62. Kf4 Qd4+ 63. Kf3 Qd3+ 64. Kf2 Qb3 65. Ke2 Qb2+ 66. Kf1 Qc2 67. Ke1 Qg2 68. Rd2 Qxd2+ 69. Kxd2 Rb7 70. Ke1 Rxb4 71. Kd1 Rb3 72. Kd2 Rb2+ 73. Kc3 Rc2+ 74. Kd3 Rc1 75. Kd2 Rb1 76. Ke3 Rb4 77. Kd3 Rb3+ 78. Kd4 Rb2 79. Ke4 Rc2 80. Kf4 Rd2 81. Ke4 Rd1 82. Kf3 Rh1 83. Ke2 c6 84. Ke3 Rh4 85. Kf2 Rg4 86. Ke3 Rh4 87. Kd3 Rg4 88. Kc3 Rh4 89. Kb2 Rg4 90. Kc2 Rg3 91. Kb2 Rh3 92. Kc1 Rd3 93. Kc2 Rd2+ 94. Kxd2 a5 95. Ke2 c5 96. Kd2 c4 97. Kd1 c3 98. Ke2 c2 99. Ke3 c1=Q+ 100. Ke2 Qc2+ 101. Ke1 Qg2 102. Kd1 Qd2+ 103. Kxd2 a4 104. Ke2 a3 105. Kd2 a2 106. Kd3 a1=Q 107. Kd2 Qb1 108. Ke3 Qa1 109. Kf2 Qb1 110. Ke2 Qe1+ 111. Kd3 Qe2+ 112. Kd4 Qf1 113. Ke4 Qf2 114. Kd3 Qh2 115. Kd4 Qf2+ 116. Ke4 Qf4+ 117. Kd3 Qe5 118. Kd2 Qg3 119. Kd1 Qh3 120. Ke1 Qg3+ 121. Ke2 Qh3 122. Kd2 Qg3 123. Kd1 Qh3 124. Kd2 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 Nf6 2. Nc3 Nxe4 3. Nf3 Nxf2 4. d4 Nxd1 5. Bd3 Nc6 6. O-O Nxd4 7. Na4 Nxf3+ 8. Kh1 Nd4 9. Nc3 Nb5 10. b4 Nbxc3 11. Bb2 Ne4 12. c4 Nec3 13. Re1 Ne4 14. Bxe4 e5 15. h4 Bd6 16. Ba3 Qxh4+ 17. Kg1 Qxe4 18. g3 Qd3 19. Rexd1 Qe2 20. Rab1 Qc2 21. Kh1 Qb2 22. Rd2 Qxa3 23. Rd3 Qc3 24. g4 Qxc4 25. Rc3 Qxb4 26. Kg1 Qxc3 27. Kf1 Qc4+ 28. Kg2 Qd4 29. Kh1 Qc4 30. Kg2 Qd4 31. Kg3 Qc4 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Nc3 Qg5 3. d4 b5 4. Nf3 exd4 5. Bd3 dxc3 6. O-O Nc6 7. a3 Nd4 8. b4 Nxf3+ 9. Qxf3 Bxb4 10. Rd1 Qf5 11. Bb2 Qg5 12. Qf4 Qxf4 13. g3 Qxe4 14. f3 Qd4+ 15. Kg2 Qc5 16. a4 Qe7 17. Bxc3 Bxc3 18. Rdb1 Qc5 19. f4 Qb4 20. Rc1 Qxf4 21. h4 Qe4+ 22. Bxe4 Bxa1 23. c3 Nf6 24. Kf3 Nd5 25. Kf2 Nxc3 26. Kf1 Nxe4 27. Ke1 Nd2 28. g4 Nf1 29. Rd1 d6 30. Kxf1 Bc3 31. Re1+ Be5 32. Re2 b4 33. Re1 a5 34. Kg2 b3 35. Kh1 b2 36. Re2 b1=Q+ 37. Kg2 Qc1 38. Kf3 Qb1 39. Rd2 Qc1 40. Ke4 Qe1+ 41. Kf3 Qxd2 42. Ke4 h5 43. Kf3 Qc1 44. Ke2 hxg4 45. Kd3 Qe1 46. Kc4 g3 47. Kd3 Qf2 48. Kc4 Qf3 49. Kb5 g2 50. Kc4 g1=Q 51. Kb5 Qgg3 52. Kc4 Qh3 53. Kb5 Qh2 54. Kc4 Qff2 55. Kd3 Qf3+ 56. Kc4 Qff2 57. Kd3 Qf3+ { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. f3 Bb4 3. c3 Bxc3 4. Nxc3 Nc6 5. d4 exd4 6. Bc4 Nf6 7. Bd2 dxc3 8. a3 Nxe4 9. Bd3 Nf2 10. g3 Ne4 11. b4 Nxd2 12. Kf2 Nd4 13. f4 Qh4 14. Kg2 Nb5 15. h3 Nd4 16. Rb1 Nb5 17. Qf3 Nd4 18. Bc4 Qg4 19. Qd1 Qxd1 20. Ne2 N4f3 21. g4 Nd4 22. Rb3 Nb5 23. a4 Nd4 24. Ng3 Nb5 25. Rf1 Nd4 26. Rb2 Nc2 27. Kh1 Ne3 28. Ra2 Nexc4 29. Rb2 a6 30. h4 b5 31. Ra2 Nb6 32. Kh2 Nbc4 33. Ra1 g6 34. Rc1 Nb1 35. Kh1 Qd2 36. Kg1 Qd1 37. Rfxd1 bxa4 38. Rd4 a3 39. Rxc4 Rf8 40. Ne4 a2 41. Rc2 a1=Q 42. R2xc3 Qa2 43. Rd3 Qd2 44. Kf1 Qc1+ 45. Ke2 Qf1+ 46. Ke3 Qf3+ 47. Kd4 Qh3 48. Rcc3 Qh1 49. Rc4 Qxe4+ 50. Kxe4 Nd2+ 51. Ke3 Nf1+ 52. Kd4 d6 53. Ke4 Bxg4 54. Rdd4 Bf3+ 55. Kd3 Bh1 56. Kc3 f5 57. Kc2 h6 58. Kb2 g5 59. Kc1 gxf4 60. Re4+ Kf7 61. Kc2 f3 62. Kb2 f2 63. Ka3 Kf6 64. Ka4 fxe4 65. Rc3 e3 66. Rd3 e2 67. Kb3 e1=Q 68. Rd4 Qd2 69. Rc4 Qe1 70. Kb2 Be4 71. Ka3 Bf3 72. Ka4 Qe8+ 73. Kb3 Qe5 74. Ka3 Qf4 75. Kb3 Qxh4 76. Kb2 Bd1 77. Ka3 Qg4 78. Kb2 Qf3 79. Ka2 Qh3 80. Kb2 Qg4 81. Kc1 Qf3 82. Kb1 Qh3 83. Rc3 Rg8 84. Rc4 Qg4 85. Kc1 Qf3 86. Rg4 Qh3 87. Re4 Qg2 88. Rf4+ Ke7 89. Kb2 Qg7+ 90. Ka2 Qf6 91. Rf3 Qxf3 92. Kb2 Qh3 93. Kc1 Qg4 94. Kb2 Qf3 95. Ka2 Qh3 96. Kb2 Qg4 97. Kc1 Qe4 98. Kb2 Qf4 99. Ka3 Qh4 100. Kb2 Qg5 101. Ka2 Qf4 102. Kb2 Qh4 103. Ka2 Qg4 104. Kb2 Qf3 105. Ka2 Qh3 106. Kb2 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Nf3 Qg5 3. Nc3 Nc6 4. d4 Nxd4 5. Bc4 Bb4 6. Bb3 Nxf3+ 7. Kf1 Bxc3 8. Qxf3 Qg6 9. h4 Bd2 10. Qd3 Be1 11. Kxe1 Qf5 12. f4 exf4 13. Ke2 h5 14. Ke1 Qf6 15. a4 Qe5 16. Ke2 Qc5 17. g3 Qd4 18. Kd2 Qc3+ 19. Kxc3 f6 20. Rf1 a6 21. Kc4 g5 22. Qe2 gxh4 23. Kd3 hxg3 24. Kd4 Rh7 25. Kc4 g2 26. Qe3 g1=Q 27. Qd3 Qg6 28. Bd2 f5 29. Qe2 f3 30. Qd3 fxe4 31. Qc3 f2 32. Rfe1 f1=Q+ 33. Re2 Qf3 34. Re3 Qh3 35. Rg1 Qg5 36. Rf1 Qh1 37. Qd3 Qgh4 38. Qc3 Qf2 39. Rg1 Qff3 40. Rf1 Qg4 41. Qd3 Qhg2 42. Qd4 Qg1 43. Rff3 Qa1 44. Rf4 Qh1 45. Qxe4+ Qxe4+ 46. Rexe4+ Qe6+ 47. Kc3 Qe7 48. Bc4 Qxe4 49. Bc1 Qd4+ 50. Kxd4 b5 51. Bd2 bxc4 52. c3 h4 53. Ke3 h3 54. b4 h2 55. Kf3 h1=Q+ 56. Kg3 Qe4 57. Kg4 Qe1 58. Kf3 Qg3+ 59. Kxg3 a5 60. Kf2 axb4 61. Kf1 bxc3 62. Ke2 Ba6 63. Be1 c2 64. Kd2 d6 65. Ke3 O-O-O 66. Kd2 c3+ 67. Ke3 c1=Q+ 68. Ke4 Qxf4+ 69. Kxf4 c2 70. Ke4 c1=Q 71. Kf3 Qf4+ 72. Kxf4 c5 73. Kf3 Bd3 74. Kf4 Be4 75. Kg3 c4 76. Kg4 c3 77. Kf4 c2 78. Kxe4 c1=Q 79. Kf3 Qxe1 80. Kf4 Qd2+ 81. Kf3 Qf4+ 82. Ke2 Qf2+ 83. Kd3 Rh6 84. Kc3 Qe3+ 85. Kb2 Qe4 86. Ka2 Qe1 87. Kb2 Qd2+ 88. Ka3 Qc2 89. Kb4 Qc1 90. Kb3 Qe1 91. Kb2 Qd2+ 92. Ka3 Qd1 93. Kb2 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 Nf6 2. d4 e5 3. Nc3 exd4 4. Nf3 d3 5. Bxd3 Bb4 6. a3 Bxc3+ 7. Bd2 Nxe4 8. b4 Nxd2 9. h4 Qxh4 10. Rc1 Qh2 11. Ke2 Nc6 12. Qxd2 Qh3 13. g3 Qg2 14. Qxc3 Qxh1 15. Be4 Qxf3+ 16. Kd2 Qe3+ 17. Kxe3 Nd4 18. Kxd4 Kd8 19. Kc4 Re8 20. g4 g5 21. Kd3 Rxe4 22. f4 Rxf4 23. Ke3 Ke8 24. Kd2 Rf3 25. Ke1 Rh3 26. Kd2 Rh1 27. Kd3 Rxc1 28. Ke4 Ra1 29. Kf3 Ra2 30. Kg3 Rxc2 31. Kh3 Rxc3+ 32. Kg2 Rc4 33. Kh1 Rc3 34. Kh2 Rc4 35. Kg2 Rd4 36. Kg3 Rc4 37. Kh3 Rc2 38. Kg3 Ra2 39. Kh3 Rd2 40. Kg3 Rd1 41. Kh3 Rd2 42. Kg3 Rd1 43. Kh3 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 e5 2. Nc3 Nf6 3. Nf3 Nc6 4. d4 exd4 5. Bc4 dxc3 6. O-O Nxe4 7. Bf4 Bb4 8. a3 Nxf2 9. g3 Ne4 10. Re1 Nd4 11. Qe2 Nb5 12. h4 Qxh4 13. Qe3 Qh2+ 14. Kf1 Qh1+ 15. Ke2 Qg2+ 16. Kd1 Qh1 17. a4 Qxf3+ 18. Qxf3 f5 19. Ke2 Nf2 20. Qe3+ Ne4 21. Qf2 Nbd6 22. Ke3 Rf8 23. Qf1 Nc5 24. Kf3+ Nde4 25. Bb3 Rf7 26. g4 fxg4+ 27. Kxg4 g6 28. Kh4 Nd3 29. Red1 Ndf2 30. Be3 Nxd1 31. Kh3 Bc5 32. Kg4 h5+ 33. Kh4 Rf6 34. Kh3 Rf3+ 35. Kh4 Bb4 36. Rxd1 Ba5 37. Rd3 Kf8 38. Rd4 Nf2 39. Bf4 Rh3+ 40. Kg5 Ne4+ 41. Kxg6 Nf2 42. Be3 Rh1 43. Kg5 d6 44. Qg2 Ne4+ 45. Kf4 Nc5 46. Qe2 Ra1 47. Qd3 Rg1 48. Qc4 Bb4 49. Bf2 Ra1 50. Kg3 Rg1+ 51. Kh4 Ra1 52. Kg3 Rg1+ 53. Kf3 Ra1 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. d4 Nc6 2. Nf3 Nxd4 3. Nc3 Nxf3+ 4. exf3 Nf6 5. Bd2 d6 6. Be2 Nd5 7. h4 Nxc3 8. b3 Nd5 9. O-O Ne3 10. c3 Nf5 11. g3 Nd4 12. f4 Nb5 13. a4 Nd4 14. f3 Nxf3+ 15. Bxf3 f6 16. c4 Bg4 17. Qe1 Bxf3 18. Qf2 Bh1 19. Rad1 Bd5 20. Qh2 Be4 21. Rfe1 Bd3 22. Re5 Be4 23. g4 Bd3 24. Qe2 Bxe2 25. Kg2 a6 26. b4 Bf1+ 27. Kh1 Rc8 28. Ra1 fxe5 29. Kh2 exf4 30. Rxf1 f3 31. Kg3 f2 32. Kg2 Rb8 33. Kg3 d5 34. Be3 d4 35. Bf4 d3 36. Kh3 Qd4 37. Re1 d2 38. Rd1 Qc3+ 39. Kg2 Qxc4 40. Kf3 Qd5+ 41. Kxf2 Qf3+ 42. Kg1 Qxd1+ 43. Kg2 Qb1 44. Kg3 Qc1 45. Kg2 Qf1+ 46. Kg3 d1=Q 47. Bd2 Qxd2 48. b5 Qh2+ 49. Kxh2 Qg2+ 50. Kxg2 h6 51. Kh1 a5 52. Kg2 Rh7 53. Kh1 g5 54. Kh2 gxh4 55. Kh1 Rh8 56. Kg1 Rh7 57. Kf2 Rf7+ 58. Ke1 Rf5 59. Kd2 Rf6 60. Ke3 Re6+ 61. Kf4 Re5 62. Kf3 Re4 63. Kf2 Rf4+ 64. Ke2 Bg7 65. Kd1 Rf3 66. Kd2 Rh3 67. Ke1 Rh1+ 68. Ke2 h3 69. Ke3 Bf6 70. Kf3 Bd4 71. Kg3 Re1 72. Kxh3 Re2 73. Kh4 Re1 74. Kh3 Re2 75. Kh4 Re1 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 Nf6 2. Nc3 Nxe4 3. Nf3 Nxd2 4. Bc4 Nc6 5. Bxd2 e5 6. Nh4 d5 7. f3 Nd4 8. O-O Nxf3+ 9. Qxf3 Qxh4 10. g3 Qh5 11. h4 Qxf3 12. Nd1 Bg4 13. b3 f6 14. Ne3 Qd1 15. Bc3 Bf3 16. Rb1 d4 17. Kh2 dxc3 18. Rf2 Rd8 19. g4 Rd2 20. Kg3 Qxc2 21. Rxf3 Rd1 22. Rf4 exf4+ 23. Kh3 Qg2+ 24. Kxg2 Rxb1 25. Kh3 Rc1 26. Bd3 Re1 27. Bc2 Re2 28. a3 Rxc2 29. b4 Rg2 30. Kxg2 c2 31. Kf2 c1=Q 32. Kf3 Qc4 33. Kg2 Qe2+ 34. Kh1 Qc2 35. Kg1 Qg2+ 36. Kxg2 a6 37. Kh1 Bxb4 38. a4 Bf8 39. Kh2 g5 40. Kh3 gxh4 41. Kxh4 f3 42. Kg3 Bb4 43. Kh3 Bc5 44. Kg3 f2 45. Kg2 f5 46. Kg3 f4+ 47. Kh3 Rf8 48. Kh4 f1=Q 49. Nc4 Qg2 50. a5 Qxg4+ 51. Kxg4 Rf5 52. Kf3 Rf6 53. Kg4 f3 54. Kh3 Rf5 55. Kg4 Rf6 56. Kh4 Rf5 57. Kh3 Rd5 58. Kh4 Rd4+ 59. Kh3 Rd3 60. Kg4 f2 61. Kf4 Rd2 62. Kf3 Re2 63. Kg3 Re1 64. Kf3 f1=Q+ 65. Kg4 Rd1 66. Kh4 Qxc4+ 67. Kg3 Qc3+ 68. Kg2 Qc4 69. Kh3 Qc3+ 70. Kg4 Qc2 71. Kf3 Rb1 72. Kg3 Qg2+ 73. Kf4 Qh1 74. Kg4 Qe4+ 75. Kg3 Qe1+ 76. Kh3 Qd2 77. Kh4 Qd1 78. Kg3 Qd2 79. Kg4 Qd1+ 80. Kh4 Qd2 81. Kg3 Rc1 82. Kh3 Re1 83. Kg4 Qd1+ 84. Kh4 Qd2 85. Kg3 Qd5 86. Kg4 Qd4+ 87. Kf3 Qd3+ 88. Kf4 Qe3+ 89. Kg4 Qe2+ 90. Kh4 Qf2+ 91. Kh5 Qe3 92. Kh4 Qe2 93. Kh3 Qd2 94. Kg4 Qd1+ 95. Kh4 Bb4 96. Kg3 Qd2 97. Kh3 { draw by repetition } 1/2-1/2
+
+[Event "Self-Play Tournament"]
+[Site "SelfPlayChessAI"]
+[Date "2026.05.28"]
+[Round "-"]
+[White "Defensive"]
+[Black "Aggressive"]
+[Result "1/2-1/2"]
+[Termination "draw by repetition"]
+
+1. e4 Nf6 2. Nc3 Nh5 3. d4 Nf4 4. Nf3 Nc6 5. g3 e5 6. Nh4 exd4 7. f3 Ne2 8. Be3 dxc3 9. Bg2 Qxh4 10. Rf1 Ncd4 11. Kf2 Qxe4 12. f4 Qd3 13. a3 Qb5 14. b3 Bb4 15. Rb1 Qb6 16. a4 Nf3 17. Qd4 Nh4 18. Kxe2 Bc5 19. Bd2 Bb4 20. Ke3 Bc5 21. Kd3 Bb4 22. Kc4 Bc5 23. h3 Bb4 24. Qe3+ Kf8 25. Qe4 Bc5 26. Rbc1 Bb4 27. Be3 Bc5 28. Kxc3 Bb4+ 29. Kb2 Qb5 30. c3 Bxc3+ 31. Kb1 Qe2 32. Bd2 Qxg2 33. Qf3 Qxh3 34. g4 Bxd2 35. Rc2 Qh1 36. Rxd2 f5 37. Rd3 Qg2 38. Kc1 Qh1 39. Kb2 fxg4 40. Ka2 Qxf3 41. Kb2 Qh3 42. Rf2 Qh2 43. Ka2 Qh3 44. Re2 Qh2 45. Kb2 Qg3 46. Ree3 Qg2+ 47. Kc3 Qh1 48. Kb2 Qe4 49. Kc3 Qxf4 50. b4 g3 51. Rd4 Qf5 52. Kb2 g2 53. Ka3 Qf2 54. Rf3+ Qxf3+ 55. Ka2 Qf5 56. Kb2 Qf2+ 57. Kc1 Qb2+ 58. Kxb2 g1=Q 59. Ka2 Qf2+ 60. Ka3 Qb2+ 61. Kxb2 d5 62. Ka2 Bf5 63. Rc4 d4 64. Kb2 Bd3 65. Ka2 Be2 66. Kb2 Bf1 67. Ka2 d3 68. Kb2 d2 69. Ka2 d1=Q 70. Kb2 Qb1+ 71. Ka3 Qc1+ 72. Kb3 Qa1 73. Kc2 Qa2+ 74. Kd1 Bg2 75. Rg4 Qd2+ 76. Kxd2 Bf3 77. Ke1 Bd1 78. Kxd1 Ke7 79. Kd2 Rad8+ 80. Kc1 Rd2 81. Kxd2 Ra8 82. Kd3 Rf8 83. Kd4 Rf5 84. Kc4 Re5 85. Rf4 Re4+ 86. Kc3 Rxf4 87. Kd3 Rf3+ 88. Ke2 Rh3 89. Kd2 Rh1 90. Ke2 Nf3 91. Kd3 Nd4 92. Kc4 Nb5 93. Kd3 Nd4 94. Ke4 Nb5 95. Kf4 Rc1 96. Ke4 Re1+ 97. Kf4 Nd6 98. Kg4 Rf1 99. Kh4 Rf2 100. Kh3 Rf1 101. Kg4 Rf3 102. Kh4 Rf2 103. Kh3 Rb2 104. Kg4 Rc2 105. Kh4 { draw by repetition } 1/2-1/2
+

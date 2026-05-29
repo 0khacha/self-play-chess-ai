@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Play chess against an AI trained on your own Chess.com games" />
+  <title>Play Against Yourself AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ─── Header ─── -->
+    <header class="header">
+      <h1 class="title">♚ Play Against <span class="gradient-text">Yourself</span></h1>
+      <p class="subtitle">Challenge the AI trained on your Chess.com games</p>
+    </header>
+
+    <!-- ─── Main game area ─── -->
+    <main class="main">
+      <div class="game-area">
+
+        <!-- Board column -->
+        <div class="board-section">
+          <!-- Top player -->
+          <div class="player-row" id="top-player-row">
+            <div class="player-badge">
+              <span class="player-icon" id="top-icon">♚</span>
+              <span class="player-name" id="top-name">AI</span>
+            </div>
+            <div class="captured-pieces" id="top-captured"></div>
+            <div class="material-diff" id="top-diff"></div>
+          </div>
+
+          <!-- Board -->
+          <div class="board-wrapper" id="board-wrapper">
+            <div class="board" id="board"></div>
+          </div>
+
+          <!-- Bottom player -->
+          <div class="player-row" id="bottom-player-row">
+            <div class="player-badge">
+              <span class="player-icon" id="bottom-icon">♔</span>
+              <span class="player-name" id="bottom-name">You</span>
+            </div>
+            <div class="captured-pieces" id="bottom-captured"></div>
+            <div class="material-diff" id="bottom-diff"></div>
+          </div>
+        </div>
+
+        <!-- Side panel -->
+        <aside class="panel">
+          <!-- AI Style -->
+          <div class="panel-section">
+            <h3 class="section-title">AI Personality</h3>
+            <div class="style-buttons">
+              <button class="style-btn style-normal active" data-style="0">
+                <span class="style-emoji">⚖️</span>
+                <span class="style-label">Normal</span>
+              </button>
+              <button class="style-btn style-aggressive" data-style="1">
+                <span class="style-emoji">⚔️</span>
+                <span class="style-label">Aggressive</span>
+              </button>
+              <button class="style-btn style-defensive" data-style="2">
+                <span class="style-emoji">🛡️</span>
+                <span class="style-label">Defensive</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Play As -->
+          <div class="panel-section">
+            <h3 class="section-title">Play As</h3>
+            <div class="color-buttons">
+              <button class="color-btn active" data-color="white">♔ White</button>
+              <button class="color-btn" data-color="black">♚ Black</button>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div class="panel-section">
+            <h3 class="section-title">Status</h3>
+            <div class="status" id="status">
+              <span class="status-dot"></span>
+              <span class="status-text">Press New Game to start</span>
+            </div>
+          </div>
+
+          <!-- Moves -->
+          <div class="panel-section moves-section">
+            <h3 class="section-title">Moves</h3>
+            <div class="moves-list" id="moves"></div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="panel-actions">
+            <button class="btn btn-primary" id="new-game">⟳ New Game</button>
+            <button class="btn btn-secondary" id="flip-board">↕ Flip</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- ─── Promotion modal ─── -->
+  <div class="modal-overlay" id="promotion-modal">
+    <div class="modal-card">
+      <h3>Promote to</h3>
+      <div class="promotion-options" id="promotion-options"></div>
+    </div>
+  </div>
+
+  <!-- ─── Game-over overlay ─── -->
+  <div class="modal-overlay" id="game-over-modal">
+    <div class="modal-card game-over-card">
+      <div class="game-over-icon" id="go-icon">♔</div>
+      <h2 class="game-over-title" id="go-title">Game Over</h2>
+      <p class="game-over-detail" id="go-detail"></p>
+      <button class="btn btn-primary" id="go-play-again">Play Again</button>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
