@@ -81,7 +81,7 @@ SelfPlayChessAI/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/SelfPlayChessAI.git
+git clone https://github.com/0khacha/SelfPlayChessAI.git
 cd SelfPlayChessAI
 ```
 
