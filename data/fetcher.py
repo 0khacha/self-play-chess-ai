@@ -100,14 +100,39 @@ def _save_cache(cache_file: str, data: dict) -> None:
     logger.debug("Cached response to %s", cache_file)
 
 
+def _parse_base_time(time_control: str) -> int:
+    """Extract the base time in seconds from a Chess.com time_control string.
+
+    Formats: ``'180'``, ``'180+2'``, ``'1/86400'`` (daily).
+    Returns 0 if parsing fails.
+    """
+    if not time_control:
+        return 0
+    try:
+        if "/" in time_control:
+            # Daily game format: "1/86400" → base = 86400
+            return int(time_control.split("/")[1])
+        # "180" or "180+2"
+        return int(time_control.split("+")[0])
+    except (ValueError, IndexError):
+        return 0
+
+
 def _normalize_game(game_dict: dict) -> Optional[dict]:
     """Ensure a game dict has the minimum required fields.
 
     Returns a cleaned dict with at least 'pgn', 'white', 'black' keys,
     or ``None`` if the record is unusable.
+    Filters out bullet games based on ``config.MIN_TIME_CONTROL_SECONDS``.
     """
     pgn = game_dict.get("pgn")
     if not pgn:
+        return None
+
+    # Filter out bullet games
+    tc = game_dict.get("time_control", "")
+    base_time = _parse_base_time(tc)
+    if 0 < base_time < config.MIN_TIME_CONTROL_SECONDS:
         return None
 
     white_info = game_dict.get("white", {})

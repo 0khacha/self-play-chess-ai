@@ -1,6 +1,9 @@
 """
 Play Against Yourself AI - Web Interface
 
+Uses the HybridChessAgent (neural style model + Stockfish blunder filter)
+for smart, style-aware play that never makes dumb moves.
+
 Run:
     python play.py
 
@@ -13,7 +16,6 @@ import sys
 from flask import Flask, request, jsonify, send_from_directory
 import chess
 
-from model.inference import ChessAgent
 import config
 
 # ---------------------------------------------------------------------------
@@ -21,20 +23,37 @@ import config
 # ---------------------------------------------------------------------------
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
-# Cache agents so the model is loaded only once per (style, temperature) pair.
-_agents: dict[tuple[int, float], ChessAgent] = {}
+# Cache agents so the model + engine are loaded only once per style.
+_agents: dict[int, object] = {}
 
 
-def _get_agent(style: int, temperature: float = 0.8) -> ChessAgent:
-    key = (style, temperature)
-    if key not in _agents:
+def _get_agent(style: int):
+    """Get or create a cached agent for the given style.
+
+    Uses HybridChessAgent (neural + Stockfish) if Stockfish is available,
+    otherwise falls back to the pure neural ChessAgent.
+    """
+    if style not in _agents:
         model_path = os.path.join(config.MODELS_DIR, config.CHECKPOINT_NAME)
-        _agents[key] = ChessAgent(
-            model_path=model_path,
-            style=style,
-            temperature=temperature,
-        )
-    return _agents[key]
+
+        if config.STOCKFISH_PATH and os.path.isfile(config.STOCKFISH_PATH):
+            from model.hybrid_agent import HybridChessAgent
+            _agents[style] = HybridChessAgent(
+                model_path=model_path,
+                style=style,
+                stockfish_path=config.STOCKFISH_PATH,
+                stockfish_depth=10,
+                blunder_threshold=150,
+                stockfish_multipv=10,
+            )
+        else:
+            from model.inference import ChessAgent
+            _agents[style] = ChessAgent(
+                model_path=model_path,
+                style=style,
+                temperature=0.5,
+            )
+    return _agents[style]
 
 
 # ---------------------------------------------------------------------------
@@ -97,14 +116,13 @@ def start_game():
     data = request.json or {}
     style = int(data.get("style", 0))
     player_color = data.get("playerColor", "white")
-    temp = float(data.get("temperature", 0.8))
 
     board = chess.Board()
     resp = _board_state(board)
     resp["aiMove"] = None
 
     if player_color == "black":
-        agent = _get_agent(style, temp)
+        agent = _get_agent(style)
         ai_move = agent.select_move(board)
         san = board.san(ai_move)
         board.push(ai_move)
@@ -121,7 +139,6 @@ def make_move():
     fen = data["fen"]
     move_uci = data["move"]
     style = int(data.get("style", 0))
-    temp = float(data.get("temperature", 0.8))
 
     board = chess.Board(fen)
 
@@ -144,7 +161,7 @@ def make_move():
         return jsonify(resp)
 
     # --- AI responds ---
-    agent = _get_agent(style, temp)
+    agent = _get_agent(style)
     ai_move = agent.select_move(board)
     ai_san = board.san(ai_move)
     board.push(ai_move)
@@ -165,7 +182,12 @@ if __name__ == "__main__":
         print("Run  python train.py  first to train the model.")
         sys.exit(1)
 
-    print("\n  Loading AI agents...")
+    mode = "HYBRID (Neural + Stockfish)" if (
+        config.STOCKFISH_PATH and os.path.isfile(config.STOCKFISH_PATH)
+    ) else "Neural only"
+    print(f"\n  Mode: {mode}")
+
+    print("  Loading AI agents...")
     for s in range(3):
         _get_agent(s)
         print(f"    [OK] {config.STYLE_NAMES[s]}")

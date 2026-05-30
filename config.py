@@ -47,7 +47,7 @@ API_RATE_LIMIT_SECONDS = 1.0  # seconds between requests
 # ---------------------------------------------
 # Set to None to use heuristic-only labeling.
 # Otherwise, set to the path of your Stockfish binary.
-STOCKFISH_PATH = None  # e.g., r"C:\stockfish\stockfish-windows-x86-64-avx2.exe"
+STOCKFISH_PATH = os.path.join(PROJECT_ROOT, "stockfish", "stockfish", "stockfish-windows-x86-64-avx2.exe")
 STOCKFISH_DEPTH = 12
 STOCKFISH_THREADS = 2
 STOCKFISH_HASH_MB = 256
@@ -93,7 +93,7 @@ STYLE_NAMES = {
 # ---------------------------------------------
 # Model Architecture
 # ---------------------------------------------
-STYLE_EMBED_DIM = 32
+STYLE_EMBED_DIM = 8
 NUM_FILTERS = 128
 NUM_RESIDUAL_BLOCKS = 6
 POLICY_HEAD_FILTERS = 32
@@ -103,18 +103,25 @@ POLICY_HEAD_FILTERS = 32
 # ---------------------------------------------
 BATCH_SIZE = 256
 LEARNING_RATE = 1e-3
-WEIGHT_DECAY = 1e-4
+WEIGHT_DECAY = 1e-3
 NUM_EPOCHS = 50
-EARLY_STOPPING_PATIENCE = 5
-VALIDATION_SPLIT = 0.1
+EARLY_STOPPING_PATIENCE = 8
+VALIDATION_SPLIT = 0.15
+LABEL_SMOOTHING = 0.1
 CHECKPOINT_NAME = "chess_style_model.pt"
 
 # ---------------------------------------------
 # Self-Play
 # ---------------------------------------------
 SELFPLAY_GAMES_PER_MATCHUP = 10   # per color, so 20 total per pair
-SELFPLAY_TEMPERATURE = 0.8
+SELFPLAY_TEMPERATURE = 0.5
 SELFPLAY_MAX_MOVES = 200          # per side (400 half-moves)
+INFERENCE_TOP_K = 5               # sample from top-k moves at inference
+
+# Data filtering
+MIN_GAME_HALFMOVES = 14           # skip very short games
+SKIP_OPENING_MOVES = 6            # skip first N full moves (book territory)
+MIN_TIME_CONTROL_SECONDS = 180    # filter out bullet games (< 3 min)
 
 # ---------------------------------------------
 # Device

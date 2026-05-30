@@ -66,8 +66,10 @@ class Trainer:
             T_max=self.num_epochs,
         )
 
-        # Loss function
-        self.criterion = nn.CrossEntropyLoss()
+        # Loss function (with label smoothing to reduce overfitting)
+        self.criterion = nn.CrossEntropyLoss(
+            label_smoothing=getattr(config, "LABEL_SMOOTHING", 0.0)
+        )
 
         # Tracking
         self.best_val_loss = float("inf")

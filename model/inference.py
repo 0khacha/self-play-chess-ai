@@ -45,7 +45,8 @@ class ChessAgent:
         model_path: str,
         style: int,
         device: Optional[torch.device] = None,
-        temperature: float = 0.8,
+        temperature: float = 0.5,
+        top_k: int | None = None,
     ) -> None:
         if style not in config.STYLE_NAMES:
             raise ValueError(
@@ -55,6 +56,7 @@ class ChessAgent:
         self.style = style
         self.device = device if device is not None else config.DEVICE
         self.temperature = temperature
+        self.top_k = top_k if top_k is not None else getattr(config, "INFERENCE_TOP_K", 5)
 
         # -- Load the model ---------------------------------------
         self.model = ChessStyleNetwork.from_config()
@@ -146,9 +148,16 @@ class ChessAgent:
             chosen_index = logits.argmax().item()
         else:
             scaled_logits = logits / self.temperature
+
+            # Top-k filtering: zero out everything outside the top-k
+            if self.top_k and self.top_k > 0:
+                topk_vals, _ = torch.topk(scaled_logits, min(self.top_k, (scaled_logits > float("-inf")).sum().item()))
+                threshold = topk_vals[-1]
+                scaled_logits = scaled_logits.masked_fill(scaled_logits < threshold, float("-inf"))
+
             probs = F.softmax(scaled_logits, dim=0)
 
-            # Sample from the distribution
+            # Sample from the (filtered) distribution
             chosen_index = torch.multinomial(probs, num_samples=1).item()
 
         # 6. Map index -> chess.Move

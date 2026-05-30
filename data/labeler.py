@@ -126,40 +126,65 @@ def _is_retreat(move: chess.Move, color: chess.Color) -> bool:
 # -----------------------------------------------------------------------------
 
 def _label_heuristic(record: GameRecord) -> int:
-    """Classify a single move using only python-chess heuristics."""
+    """Classify a single move using only python-chess heuristics.
+
+    Requires *multiple* indicators to label a move as aggressive or defensive.
+    Single indicators are not enough — most moves should remain Normal.
+    """
     board = chess.Board(record.fen)
     move = chess.Move.from_uci(record.move_uci)
     color = record.player_color
     opponent = not color
 
-    # -- Aggressive indicators --------------------------------------------
-    gives_check = board.gives_check(move)
+    # -- Count aggressive indicators --------------------------------------
+    aggressive_score = 0
 
-    if _is_sacrifice_or_trade_up(move, board):
-        return config.STYLE_AGGRESSIVE
+    gives_check = board.gives_check(move)
+    is_sacrifice = _is_sacrifice_or_trade_up(move, board)
+    pawn_push = _is_pawn_push_past_rank5(move, board, color)
+    king_zone = _moves_into_king_zone(move, board, opponent)
+
+    # True sacrifice: moving a higher-value piece to capture lower-value
+    moving_piece = board.piece_at(move.from_square)
+    if is_sacrifice and moving_piece and _PIECE_VALUES.get(moving_piece.piece_type, 0) >= 3:
+        aggressive_score += 2  # strong signal
+    elif is_sacrifice:
+        aggressive_score += 1
 
     if gives_check:
+        aggressive_score += 1
+
+    if pawn_push:
+        aggressive_score += 1
+
+    if king_zone and not board.is_capture(move):
+        # Non-capture move into king zone = attacking intent
+        aggressive_score += 1
+
+    # Need at least 2 indicators to label as aggressive
+    if aggressive_score >= 2:
         return config.STYLE_AGGRESSIVE
 
-    if _is_pawn_push_past_rank5(move, board, color):
-        return config.STYLE_AGGRESSIVE
+    # -- Count defensive indicators ---------------------------------------
+    defensive_score = 0
 
-    if _moves_into_king_zone(move, board, opponent):
-        return config.STYLE_AGGRESSIVE
-
-    # -- Defensive indicators ---------------------------------------------
-    if board.is_castling(move):
-        return config.STYLE_DEFENSIVE
-
-    if _is_retreat(move, color):
-        return config.STYLE_DEFENSIVE
-
-    # Piece stays on own half, no capture, no check
-    if (
+    is_castling = board.is_castling(move)
+    is_retreat_move = _is_retreat(move, color)
+    on_own_half = (
         not board.is_capture(move)
         and not gives_check
         and _is_on_own_half(move.to_square, color)
-    ):
+    )
+
+    if is_castling:
+        defensive_score += 1
+    if is_retreat_move:
+        defensive_score += 1
+    if on_own_half and is_retreat_move:
+        defensive_score += 1  # retreating to own half = strong defensive
+
+    # Need at least 2 indicators to label as defensive
+    if defensive_score >= 2:
         return config.STYLE_DEFENSIVE
 
     # -- Normal -----------------------------------------------------------

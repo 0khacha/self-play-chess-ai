@@ -84,7 +84,8 @@ def main():
     print("Step 4/5: Building training dataset...")
     from data.dataset import build_dataloaders
 
-    train_loader, val_loader = build_dataloaders(labeled)
+    # Pass records for game-based train/val splitting (no data leakage)
+    train_loader, val_loader = build_dataloaders(labeled, records=records)
     print(f"   Train: {len(train_loader.dataset):,} samples, Val: {len(val_loader.dataset):,} samples\n")
 
     # --- Step 5: Train model -----------------------------------------

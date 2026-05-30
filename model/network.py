@@ -3,10 +3,10 @@ Style-conditioned residual CNN for chess move prediction.
 
 Architecture:
     1. Style embedding:  (batch,) int  ->  (batch, style_embed_dim, 8, 8)
-    2. Concatenation:    board (batch, 18, 8, 8) + style -> (batch, 50, 8, 8)
-    3. Initial conv:     50 -> 128 channels, 3x3, pad 1, BN, ReLU
+    2. Concatenation:    board (batch, 18, 8, 8) + style -> (batch, 26, 8, 8)
+    3. Initial conv:     26 -> 128 channels, 3x3, pad 1, BN, ReLU
     4. Residual tower:   6 x ResidualBlock (128 -> 128)
-    5. Policy head:      Conv 128->32, 1x1, BN, ReLU -> FC(2048 -> 4672)
+    5. Policy head:      Conv 128->32, 1x1, BN, ReLU -> Dropout(0.3) -> FC(2048 -> 4672)
 """
 from __future__ import annotations
 
@@ -107,6 +107,7 @@ class ChessStyleNetwork(nn.Module):
         # -- Policy head ------------------------------------------
         self.policy_conv = nn.Conv2d(num_filters, policy_filters, kernel_size=1, bias=False)
         self.policy_bn = nn.BatchNorm2d(policy_filters)
+        self.policy_dropout = nn.Dropout(0.3)
         self.policy_fc = nn.Linear(
             policy_filters * config.BOARD_SIZE * config.BOARD_SIZE,  # 32 * 8 * 8 = 2048
             move_vocab_size,
@@ -146,6 +147,7 @@ class ChessStyleNetwork(nn.Module):
         # Policy head
         x = F.relu(self.policy_bn(self.policy_conv(x)))
         x = x.view(batch_size, -1)  # flatten to (batch, policy_filters * 8 * 8)
+        x = self.policy_dropout(x)
         logits = self.policy_fc(x)
 
         return logits

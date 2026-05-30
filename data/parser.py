@@ -140,7 +140,8 @@ def parse_games(
             total_half_moves += 1
 
             # Record only the target player's moves
-            if board.turn == player_color:
+            # Skip opening book moves (first N full moves)
+            if board.turn == player_color and board.fullmove_number > config.SKIP_OPENING_MOVES:
                 fen = board.fen()
                 move_uci = move.uci()
                 move_number = board.fullmove_number
@@ -159,8 +160,8 @@ def parse_games(
             board.push(move)
             node = next_node
 
-        # Skip aborted games (fewer than 5 total half-moves)
-        if total_half_moves < 5:
+        # Skip short/aborted games
+        if total_half_moves < config.MIN_GAME_HALFMOVES:
             skipped_short += 1
             continue
 
