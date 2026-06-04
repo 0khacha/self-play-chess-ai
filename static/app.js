@@ -138,7 +138,27 @@ class ChessGame {
       }
 
       // Legal move to this square?
-      const hits = this.legalMoves.filter(m => m.from === this.selectedSquare && m.to === sq);
+      let hits = this.legalMoves.filter(m => m.from === this.selectedSquare && m.to === sq);
+
+      // ── Castling via rook click ──
+      // If the king is selected and user clicks their own rook, find the
+      // matching castling move (king→g1/c1 or king→g8/c8).
+      if (!hits.length) {
+        const selPiece = this._pieceAt(this.selectedSquare);
+        const clickPiece = this._pieceAt(sq);
+        if (selPiece && clickPiece && this._own(clickPiece)
+            && selPiece.toUpperCase() === "K" && clickPiece.toUpperCase() === "R") {
+          // Determine if kingside or queenside based on rook file
+          const rookFile = sq.charCodeAt(0) - 97; // 0=a, 7=h
+          const kingFile = this.selectedSquare.charCodeAt(0) - 97;
+          const rank = this.selectedSquare[1]; // '1' or '8'
+          const castleTo = rookFile > kingFile
+            ? "g" + rank   // kingside  (O-O)
+            : "c" + rank;  // queenside (O-O-O)
+          hits = this.legalMoves.filter(m => m.from === this.selectedSquare && m.to === castleTo);
+        }
+      }
+
       if (hits.length) {
         if (hits.some(m => m.promotion)) {          // promotion
           this.pendingPromo = { from: this.selectedSquare, to: sq };

@@ -96,25 +96,60 @@ class HybridChessAgent:
             state_dict = checkpoint
         self.model.load_state_dict(state_dict)
 
+    @staticmethod
+    def _total_material(board: chess.Board) -> int:
+        """Count total non-king material on the board (both sides)."""
+        values = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3,
+                  chess.ROOK: 5, chess.QUEEN: 9}
+        total = 0
+        for pt, val in values.items():
+            total += len(board.pieces(pt, chess.WHITE)) * val
+            total += len(board.pieces(pt, chess.BLACK)) * val
+        return total
+
+    def _get_phase_params(self, board: chess.Board) -> tuple[int, int, float]:
+        """Return (depth, blunder_threshold, stockfish_weight) based on game phase.
+
+        Endgames need more precise play (deeper search, tighter threshold,
+        Stockfish eval weighted much more than the neural style score).
+        """
+        mat = self._total_material(board)
+
+        if mat <= 12:
+            # Deep endgame (e.g. R+P vs R, or K+P vs K)
+            return 18, 30, 10.0
+        elif mat <= 24:
+            # Late middlegame / early endgame
+            return 14, 75, 5.0
+        else:
+            # Opening / middlegame — style matters most
+            return self.stockfish_depth, self.blunder_threshold, 1.0
+
     @torch.no_grad()
     def select_move(self, board: chess.Board) -> chess.Move:
         """Select a move: Stockfish-safe + style-matched.
 
         Pipeline:
-          1. Get Stockfish's top N moves with evaluations.
-          2. Filter out blunders (moves losing > threshold vs best eval).
-          3. Score remaining moves with the neural model.
-          4. Pick the move with highest neural model score.
+          1. Determine game phase (opening/middle/endgame) from material count.
+          2. Get Stockfish's top N moves with evaluations (deeper in endgames).
+          3. Filter out blunders (tighter threshold in endgames).
+          4. Score remaining moves with the neural model.
+          5. Combine scores: neural style + Stockfish eval (Stockfish weighted
+             more heavily in endgames where precision matters).
+          6. Pick the move with highest combined score.
         """
         legal_moves = list(board.legal_moves)
         if len(legal_moves) == 1:
             return legal_moves[0]
 
+        # --- Phase-dependent parameters ---
+        depth, threshold, sf_weight = self._get_phase_params(board)
+
         # --- Step 1: Get Stockfish candidates ---
         try:
             analysis = self.engine.analyse(
                 board,
-                chess.engine.Limit(depth=self.stockfish_depth),
+                chess.engine.Limit(depth=depth),
                 multipv=min(self.stockfish_multipv, len(legal_moves)),
             )
         except Exception as exc:
@@ -137,7 +172,7 @@ class HybridChessAgent:
         best_eval = candidates[0][1]  # Stockfish's best move eval
         safe_moves = [
             (move, cp) for move, cp in candidates
-            if (best_eval - cp) <= self.blunder_threshold
+            if (best_eval - cp) <= threshold
         ]
 
         # If all moves are "blunders" (forced position), keep the best one
@@ -157,9 +192,9 @@ class HybridChessAgent:
             try:
                 idx = move_to_index(move, board)
                 model_score = logits[idx].item()
-                # Combine: neural score + small bonus for Stockfish eval
-                # The neural score drives style; Stockfish eval is a tiebreaker
-                combined = model_score + (cp / 1000.0)  # cp in pawns as bonus
+                # Combine: neural style + Stockfish eval
+                # sf_weight scales with game phase (1x middle, 5-10x endgame)
+                combined = model_score + sf_weight * (cp / 100.0)
                 if combined > best_score:
                     best_score = combined
                     best_move = move
