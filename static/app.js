@@ -64,9 +64,25 @@ class ChessGame {
       this.newGame();
     });
 
+    // Board size slider
+    const slider = document.getElementById("board-size");
+    const sizeLabel = document.getElementById("size-value");
+    const saved = localStorage.getItem("boardSize");
+    if (saved) { slider.value = saved; }
+    this._applyBoardSize(+slider.value, sizeLabel);
+    slider.addEventListener("input", () => {
+      this._applyBoardSize(+slider.value, sizeLabel);
+      localStorage.setItem("boardSize", slider.value);
+    });
+
     // Board clicks
     this.boardEl.addEventListener("click",       (e) => this._onSquareClick(e));
     this.boardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); this.selectedSquare = null; this._renderBoard(); });
+  }
+
+  _applyBoardSize(px, label) {
+    this.wrapperEl.style.setProperty("--board-size", px + "px");
+    if (label) label.textContent = px;
   }
 
   // ──────────────── Load Player ────────────────

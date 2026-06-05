@@ -217,7 +217,7 @@ body::before {
 /* ─── Board Frame (wooden border) ─── */
 .board-wrapper {
   position: relative;
-  width: min(520px, calc(100vh - 180px), calc(100vw - 340px));
+  width: min(var(--board-size, 600px), calc(100vh - 160px), calc(100vw - 340px));
   padding: 8px;
   background: linear-gradient(155deg, var(--board-frame-1), var(--board-frame-2) 70%);
   border-radius: 8px;
@@ -858,6 +858,58 @@ body::before {
 
   .game-over-card { padding: 32px 28px; }
   .promotion-options .promo-btn { width: 60px; height: 60px; font-size: 36px; }
+}
+
+/* ─── Board Size Slider ─── */
+.size-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.size-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.size-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+.size-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.size-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--accent-bright);
+  min-width: 28px;
+  text-align: right;
+  font-weight: 600;
 }
 
 /* ─── Username Input ─── */
