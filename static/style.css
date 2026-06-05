@@ -76,8 +76,8 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: var(--text);
   background: var(--bg-deep);
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden;
 }
 
 /* Ambient background */
@@ -104,22 +104,26 @@ body::before {
 .app {
   position: relative;
   z-index: 1;
-  max-width: 1060px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 28px 20px 48px;
+  padding: 12px 20px 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ─── Header ─── */
 .header {
   text-align: center;
-  margin-bottom: 36px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .title {
-  font-size: 2.2rem;
+  font-size: 1.7rem;
   font-weight: 800;
   letter-spacing: -0.03em;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   color: var(--text);
 }
 
@@ -131,26 +135,33 @@ body::before {
 }
 
 .subtitle {
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   color: var(--text-dim);
   font-weight: 400;
   letter-spacing: 0.01em;
 }
 
 /* ─── Layout ─── */
-.main { display: flex; justify-content: center; }
+.main {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  min-height: 0;
+}
 
 .game-area {
   display: flex;
-  gap: 24px;
-  align-items: flex-start;
+  gap: 20px;
+  align-items: stretch;
+  height: 100%;
 }
 
 /* ─── Board Section ─── */
 .board-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  justify-content: center;
 }
 
 /* ─── Player Rows ─── */
@@ -206,8 +217,8 @@ body::before {
 /* ─── Board Frame (wooden border) ─── */
 .board-wrapper {
   position: relative;
-  width: min(560px, calc(100vw - 40px));
-  padding: 10px;
+  width: min(520px, calc(100vh - 180px), calc(100vw - 340px));
+  padding: 8px;
   background: linear-gradient(155deg, var(--board-frame-1), var(--board-frame-2) 70%);
   border-radius: 8px;
   box-shadow:
@@ -395,27 +406,28 @@ body::before {
 
 /* ─── Side Panel ─── */
 .panel {
-  width: 272px;
+  width: 260px;
   flex-shrink: 0;
   background: var(--bg-glass);
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 22px;
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  overflow-y: auto;
 }
 
 .section-title {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.10em;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* ─── Style Buttons ─── */
@@ -552,17 +564,17 @@ body::before {
 }
 
 /* ─── Move List ─── */
-.moves-section { flex: 1; min-height: 0; }
+.moves-section { flex: 1; min-height: 0; overflow: hidden; }
 
 .moves-list {
-  max-height: 230px;
+  max-height: 180px;
   overflow-y: auto;
   font-family: 'JetBrains Mono', 'Consolas', monospace;
-  font-size: 0.76rem;
+  font-size: 0.73rem;
   background: rgba(0, 0, 0, 0.20);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 6px 4px;
+  padding: 4px 4px;
 }
 
 .moves-empty {
@@ -776,21 +788,64 @@ body::before {
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* ─── Footer ─── */
+.footer {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 10px 0 12px;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.footer a {
+  color: var(--accent-bright);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.footer a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+.footer .heart {
+  color: #ef4444;
+  display: inline-block;
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%      { transform: scale(1.2); }
+  28%      { transform: scale(1); }
+  42%      { transform: scale(1.15); }
+  56%      { transform: scale(1); }
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 900px) {
+  .app { height: auto; min-height: 100vh; overflow: auto; }
+
   .game-area {
     flex-direction: column;
     align-items: center;
+    height: auto;
   }
+
+  .board-wrapper { width: min(520px, calc(100vw - 40px)); }
 
   .panel {
     width: 100%;
-    max-width: 560px;
+    max-width: 520px;
+    overflow-y: visible;
   }
 
-  .app { padding: 16px 12px 32px; }
-  .title { font-size: 1.6rem; }
-  .header { margin-bottom: 24px; }
+  .app { padding: 12px 12px 0; }
+  .title { font-size: 1.5rem; }
+  .header { margin-bottom: 10px; }
 }
 
 @media (max-width: 500px) {
@@ -799,7 +854,7 @@ body::before {
     padding: 6px;
   }
 
-  .panel { padding: 16px; gap: 14px; }
+  .panel { padding: 14px; gap: 10px; }
 
   .game-over-card { padding: 32px 28px; }
   .promotion-options .promo-btn { width: 60px; height: 60px; font-size: 36px; }
