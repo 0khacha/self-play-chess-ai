@@ -1,8 +1,8 @@
 """
-Play Against Yourself AI - Web Interface
+Play Against Yourself AI – Web Interface
 
-Uses the HybridChessAgent (neural style model + Stockfish blunder filter)
-for smart, style-aware play that never makes dumb moves.
+Uses BookAgent (player opening-book + Stockfish fallback) to mimic a
+Chess.com player's style.
 
 Run:
     python play.py
@@ -12,48 +12,24 @@ Then open http://localhost:5000 in your browser.
 
 import os
 import sys
+import logging
 
 from flask import Flask, request, jsonify, send_from_directory
 import chess
 
 import config
+from model.book_agent import PlayerBook, BookAgent
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Flask app
 # ---------------------------------------------------------------------------
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
-# Cache agents so the model + engine are loaded only once per style.
-_agents: dict[int, object] = {}
-
-
-def _get_agent(style: int):
-    """Get or create a cached agent for the given style.
-
-    Uses HybridChessAgent (neural + Stockfish) if Stockfish is available,
-    otherwise falls back to the pure neural ChessAgent.
-    """
-    if style not in _agents:
-        model_path = os.path.join(config.MODELS_DIR, config.CHECKPOINT_NAME)
-
-        if config.STOCKFISH_PATH and os.path.isfile(config.STOCKFISH_PATH):
-            from model.hybrid_agent import HybridChessAgent
-            _agents[style] = HybridChessAgent(
-                model_path=model_path,
-                style=style,
-                stockfish_path=config.STOCKFISH_PATH,
-                stockfish_depth=10,
-                blunder_threshold=150,
-                stockfish_multipv=10,
-            )
-        else:
-            from model.inference import ChessAgent
-            _agents[style] = ChessAgent(
-                model_path=model_path,
-                style=style,
-                temperature=0.5,
-            )
-    return _agents[style]
+# Global agent state
+_current_agent: BookAgent | None = None
+_current_username: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -110,20 +86,57 @@ def index():
     return send_from_directory("static", "index.html")
 
 
+@app.route("/api/load_player", methods=["POST"])
+def load_player():
+    """Load a Chess.com player's opening book and create a BookAgent."""
+    global _current_agent, _current_username
+
+    data = request.json or {}
+    username = data.get("username", "").strip()
+    if not username:
+        return jsonify({"success": False, "error": "Username is required"}), 400
+
+    try:
+        # Close the previous agent if any
+        if _current_agent is not None:
+            _current_agent.close()
+            _current_agent = None
+            _current_username = None
+
+        book = PlayerBook(username)
+        stats = book.build()
+
+        agent = BookAgent(book, config.STOCKFISH_PATH)
+        _current_agent = agent
+        _current_username = username
+
+        return jsonify({
+            "success": True,
+            "username": stats["username"],
+            "games": stats["games"],
+            "positions": stats["positions"],
+            "rating": stats["rating"],
+        })
+    except Exception as exc:
+        logger.exception("Failed to load player '%s'", username)
+        return jsonify({"success": False, "error": str(exc)}), 500
+
+
 @app.route("/api/start", methods=["POST"])
 def start_game():
     """Start a new game.  If the player chose black, the AI plays first."""
     data = request.json or {}
-    style = int(data.get("style", 0))
     player_color = data.get("playerColor", "white")
+
+    if _current_agent is None:
+        return jsonify({"success": False, "error": "No player loaded"}), 400
 
     board = chess.Board()
     resp = _board_state(board)
     resp["aiMove"] = None
 
     if player_color == "black":
-        agent = _get_agent(style)
-        ai_move = agent.select_move(board)
+        ai_move = _current_agent.select_move(board)
         san = board.san(ai_move)
         board.push(ai_move)
         resp = _board_state(board)
@@ -138,11 +151,12 @@ def make_move():
     data = request.json
     fen = data["fen"]
     move_uci = data["move"]
-    style = int(data.get("style", 0))
+
+    if _current_agent is None:
+        return jsonify({"success": False, "error": "No player loaded"}), 400
 
     board = chess.Board(fen)
 
-    # --- validate player move ---
     try:
         move = chess.Move.from_uci(move_uci)
         if move not in board.legal_moves:
@@ -153,16 +167,13 @@ def make_move():
     player_san = board.san(move)
     board.push(move)
 
-    resp: dict = {"success": True, "playerMove": _move_info(move, player_san), "aiMove": None}
+    resp = {"success": True, "playerMove": _move_info(move, player_san), "aiMove": None}
     resp.update(_board_state(board))
 
-    # If the game ended with the player's move, return immediately.
     if board.is_game_over(claim_draw=True):
         return jsonify(resp)
 
-    # --- AI responds ---
-    agent = _get_agent(style)
-    ai_move = agent.select_move(board)
+    ai_move = _current_agent.select_move(board)
     ai_san = board.san(ai_move)
     board.push(ai_move)
 
@@ -176,21 +187,29 @@ def make_move():
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    model_path = os.path.join(config.MODELS_DIR, config.CHECKPOINT_NAME)
-    if not os.path.exists(model_path):
-        print(f"Error: trained model not found at {model_path}")
-        print("Run  python train.py  first to train the model.")
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+
+    # Check Stockfish
+    if not config.STOCKFISH_PATH or not os.path.isfile(config.STOCKFISH_PATH):
+        print(f"Error: Stockfish not found at {config.STOCKFISH_PATH}")
+        print("Please install Stockfish and update config.STOCKFISH_PATH.")
         sys.exit(1)
+    print(f"  Stockfish: {config.STOCKFISH_PATH}")
 
-    mode = "HYBRID (Neural + Stockfish)" if (
-        config.STOCKFISH_PATH and os.path.isfile(config.STOCKFISH_PATH)
-    ) else "Neural only"
-    print(f"\n  Mode: {mode}")
+    # Pre-load the default player
+    default_user = config.CHESS_COM_USERNAME
+    print(f"\n  Pre-loading player: {default_user} ...")
 
-    print("  Loading AI agents...")
-    for s in range(3):
-        _get_agent(s)
-        print(f"    [OK] {config.STYLE_NAMES[s]}")
+    try:
+        book = PlayerBook(default_user)
+        stats = book.build()
+        _current_agent = BookAgent(book, config.STOCKFISH_PATH)
+        _current_username = default_user
+        print(f"    [OK] {stats['games']} games, {stats['positions']} positions, "
+              f"rating={stats['rating']}")
+    except Exception as exc:
+        print(f"    [WARN] Failed to pre-load player: {exc}")
+        print("    You can load a player via POST /api/load_player")
 
     print("\n  >> Open http://localhost:5000 in your browser\n")
     app.run(host="0.0.0.0", port=5000, debug=False)

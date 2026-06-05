@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Play chess against an AI trained on your own Chess.com games" />
+  <meta name="description" content="Play chess against an AI clone of any Chess.com player" />
   <title>Play Against Yourself AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,13 +12,13 @@
 </head>
 <body>
   <div class="app">
-    <!-- ─── Header ─── -->
+    <!-- Header -->
     <header class="header">
       <h1 class="title">♚ Play Against <span class="gradient-text">Yourself</span></h1>
-      <p class="subtitle">Challenge the AI trained on your Chess.com games</p>
+      <p class="subtitle">Challenge the AI clone of any Chess.com player</p>
     </header>
 
-    <!-- ─── Main game area ─── -->
+    <!-- Main game area -->
     <main class="main">
       <div class="game-area">
 
@@ -52,22 +52,16 @@
 
         <!-- Side panel -->
         <aside class="panel">
-          <!-- AI Style -->
+          <!-- Opponent Username -->
           <div class="panel-section">
-            <h3 class="section-title">AI Personality</h3>
-            <div class="style-buttons">
-              <button class="style-btn style-normal active" data-style="0">
-                <span class="style-emoji">⚖️</span>
-                <span class="style-label">Normal</span>
-              </button>
-              <button class="style-btn style-aggressive" data-style="1">
-                <span class="style-emoji">⚔️</span>
-                <span class="style-label">Aggressive</span>
-              </button>
-              <button class="style-btn style-defensive" data-style="2">
-                <span class="style-emoji">🛡️</span>
-                <span class="style-label">Defensive</span>
-              </button>
+            <h3 class="section-title">Opponent</h3>
+            <div class="username-input-group">
+              <input type="text" id="username-input" class="username-input" 
+                     value="0khacha" placeholder="Chess.com username" spellcheck="false" />
+              <button class="btn btn-load" id="load-player">Load</button>
+            </div>
+            <div class="player-stats" id="player-stats">
+              <span class="stats-text">Enter a Chess.com username to play against</span>
             </div>
           </div>
 
@@ -85,7 +79,7 @@
             <h3 class="section-title">Status</h3>
             <div class="status" id="status">
               <span class="status-dot"></span>
-              <span class="status-text">Press New Game to start</span>
+              <span class="status-text">Load a player to start</span>
             </div>
           </div>
 
@@ -105,7 +99,7 @@
     </main>
   </div>
 
-  <!-- ─── Promotion modal ─── -->
+  <!-- Promotion modal -->
   <div class="modal-overlay" id="promotion-modal">
     <div class="modal-card">
       <h3>Promote to</h3>
@@ -113,7 +107,7 @@
     </div>
   </div>
 
-  <!-- ─── Game-over overlay ─── -->
+  <!-- Game-over overlay -->
   <div class="modal-overlay" id="game-over-modal">
     <div class="modal-card game-over-card">
       <div class="game-over-icon" id="go-icon">♔</div>

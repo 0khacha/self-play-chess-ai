@@ -1,16 +1,14 @@
 /* ================================================================
-   Play Against Yourself AI — Client-side Game Logic  (v2)
+   Play Against Yourself AI — Client-side Game Logic  (v3)
+   ================================================================
+   Loads a Chess.com player's game history and plays as their clone.
    ================================================================ */
 
-/* ─── Use filled glyphs for BOTH colours ───
-   White pieces get a stacked text-shadow outline via CSS,
-   giving crisp, platform-consistent rendering on Windows.  */
 const PIECE_CHAR = {
   K: "\u265A", Q: "\u265B", R: "\u265C", B: "\u265D", N: "\u265E", P: "\u265F",
   k: "\u265A", q: "\u265B", r: "\u265C", b: "\u265D", n: "\u265E", p: "\u265F",
 };
 
-const STYLE_NAMES  = { 0: "Normal", 1: "Aggressive", 2: "Defensive" };
 const PIECE_VALUES = { K:0,Q:9,R:5,B:3,N:3,P:1, k:0,q:9,r:5,b:3,n:3,p:1 };
 const START_COUNTS = { K:1,Q:1,R:2,B:2,N:2,P:8, k:1,q:1,r:2,b:2,n:2,p:8 };
 const START_FEN    = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -22,15 +20,16 @@ class ChessGame {
     this.legalMoves     = [];
     this.selectedSquare = null;
     this.playerColor    = "white";
-    this.aiStyle        = 0;
     this.flipped        = false;
     this.gameOver       = false;
     this.gameStarted    = false;
     this.aiThinking     = false;
     this.isCheck        = false;
-    this.lastMove       = null;           // { from, to }
-    this.moveList       = [];             // [{ san, color }, ...]
-    this.pendingPromo   = null;           // { from, to } awaiting choice
+    this.lastMove       = null;
+    this.moveList       = [];
+    this.pendingPromo   = null;
+    this.playerLoaded   = false;
+    this.loadedUsername  = null;
 
     // DOM cache
     this.boardEl   = document.getElementById("board");
@@ -45,13 +44,17 @@ class ChessGame {
 
   // ──────────────── Event binding ────────────────
   _bind() {
-    // Style buttons
-    for (const b of document.querySelectorAll(".style-btn"))
-      b.addEventListener("click", () => this._setStyle(+b.dataset.style));
-
     // Colour buttons
     for (const b of document.querySelectorAll(".color-btn"))
       b.addEventListener("click", () => this._setColor(b.dataset.color));
+
+    // Load player button
+    document.getElementById("load-player").addEventListener("click", () => this._loadPlayer());
+
+    // Enter key on username input
+    document.getElementById("username-input").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") this._loadPlayer();
+    });
 
     // Actions
     document.getElementById("new-game").addEventListener("click", () => this.newGame());
@@ -66,14 +69,51 @@ class ChessGame {
     this.boardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); this.selectedSquare = null; this._renderBoard(); });
   }
 
-  // ──────────────── Settings ────────────────
-  _setStyle(s) {
-    this.aiStyle = s;
-    for (const b of document.querySelectorAll(".style-btn"))
-      b.classList.toggle("active", +b.dataset.style === s);
-    this._renderPlayers();
+  // ──────────────── Load Player ────────────────
+  async _loadPlayer() {
+    const input = document.getElementById("username-input");
+    const btn   = document.getElementById("load-player");
+    const stats = document.getElementById("player-stats");
+    const username = input.value.trim();
+
+    if (!username) return;
+
+    btn.classList.add("loading");
+    btn.textContent = "Loading…";
+    stats.querySelector(".stats-text").textContent = `Fetching games for ${username}…`;
+    stats.querySelector(".stats-text").className = "stats-text";
+
+    try {
+      const data = await this._api("/api/load_player", { username });
+
+      if (!data.success) {
+        stats.querySelector(".stats-text").textContent = `Error: ${data.error}`;
+        stats.querySelector(".stats-text").className = "stats-text";
+        return;
+      }
+
+      this.playerLoaded  = true;
+      this.loadedUsername = data.username;
+
+      const ratingStr = data.rating ? ` (${data.rating})` : "";
+      stats.querySelector(".stats-text").innerHTML =
+        `<span class="stat-highlight">${data.username}${ratingStr}</span> loaded — ` +
+        `<span class="stat-highlight">${data.games}</span> games, ` +
+        `<span class="stat-highlight">${data.positions}</span> positions in book`;
+      stats.querySelector(".stats-text").className = "stats-text loaded";
+
+      this._setStatus("Press New Game to play!", "your-turn");
+      this._renderPlayers();
+    } catch (e) {
+      stats.querySelector(".stats-text").textContent = `Connection error — is the server running?`;
+      stats.querySelector(".stats-text").className = "stats-text";
+    } finally {
+      btn.classList.remove("loading");
+      btn.textContent = "Load";
+    }
   }
 
+  // ──────────────── Settings ────────────────
   _setColor(c) {
     this.playerColor = c;
     for (const b of document.querySelectorAll(".color-btn"))
@@ -89,6 +129,11 @@ class ChessGame {
 
   // ──────────────── New Game ────────────────
   async newGame() {
+    if (!this.playerLoaded) {
+      this._setStatus("Load a player first!", "game-over");
+      return;
+    }
+
     this.moveList       = [];
     this.lastMove       = null;
     this.selectedSquare = null;
@@ -98,11 +143,10 @@ class ChessGame {
     this.pendingPromo   = null;
     this.flipped        = this.playerColor === "black";
 
-    this._setStatus("Starting game\u2026", "thinking");
+    this._setStatus("Starting game…", "thinking");
 
     try {
       const data = await this._api("/api/start", {
-        style: this.aiStyle,
         playerColor: this.playerColor,
       });
 
@@ -141,17 +185,14 @@ class ChessGame {
       let hits = this.legalMoves.filter(m => m.from === this.selectedSquare && m.to === sq);
 
       // ── Castling via rook click ──
-      // If the king is selected and user clicks their own rook, find the
-      // matching castling move (king→g1/c1 or king→g8/c8).
       if (!hits.length) {
         const selPiece = this._pieceAt(this.selectedSquare);
         const clickPiece = this._pieceAt(sq);
         if (selPiece && clickPiece && this._own(clickPiece)
             && selPiece.toUpperCase() === "K" && clickPiece.toUpperCase() === "R") {
-          // Determine if kingside or queenside based on rook file
-          const rookFile = sq.charCodeAt(0) - 97; // 0=a, 7=h
+          const rookFile = sq.charCodeAt(0) - 97;
           const kingFile = this.selectedSquare.charCodeAt(0) - 97;
-          const rank = this.selectedSquare[1]; // '1' or '8'
+          const rank = this.selectedSquare[1];
           const castleTo = rookFile > kingFile
             ? "g" + rank   // kingside  (O-O)
             : "c" + rank;  // queenside (O-O-O)
@@ -160,7 +201,7 @@ class ChessGame {
       }
 
       if (hits.length) {
-        if (hits.some(m => m.promotion)) {          // promotion
+        if (hits.some(m => m.promotion)) {
           this.pendingPromo = { from: this.selectedSquare, to: sq };
           return this._showPromoModal();
         }
@@ -188,13 +229,13 @@ class ChessGame {
   async _sendMove(uci) {
     this.selectedSquare = null;
     this.aiThinking = true;
-    this._setStatus("AI is thinking\u2026", "thinking");
+    this._setStatus("AI is thinking…", "thinking");
     this.wrapperEl.classList.add("thinking");
-    this._renderBoard();   // show cleared selection immediately
+    this._renderBoard();
 
     try {
       const data = await this._api("/api/move", {
-        fen: this.fen, move: uci, style: this.aiStyle,
+        fen: this.fen, move: uci,
       });
       if (!data.success) {
         this._setStatus("Illegal move", "game-over");
@@ -227,16 +268,12 @@ class ChessGame {
     this.wrapperEl.classList.remove("thinking");
     this._renderAll();
     if (this.gameOver) {
-      const d = { result: this._resultFromMoves(), termination: "" };
-      // grab latest from server (already set above)
-      d.result      = this.moveList.length ? this._latestResult : "1/2-1/2";
+      const d = { result: null, termination: "" };
+      d.result      = this._latestResult || "1/2-1/2";
       d.termination = this._latestTermination || "";
       setTimeout(() => this._showGameOver(d), 500);
     }
   }
-
-  // Override _sendMove's game-over handling to use server data:
-  async _sendMoveReal() {} // placeholder; the logic above handles it inline.
 
   // Patch: capture result/termination from server response
   async _api(url, body) {
@@ -246,7 +283,6 @@ class ChessGame {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    // stash server result info
     if (data.result)      this._latestResult      = data.result;
     if (data.termination) this._latestTermination  = data.termination;
     return data;
@@ -257,9 +293,7 @@ class ChessGame {
     const modal = document.getElementById("promotion-modal");
     const box   = document.getElementById("promotion-options");
     const white = this.playerColor === "white";
-    const chars = white
-      ? [["q","♛"],["r","♜"],["b","♝"],["n","♞"]]
-      : [["q","♛"],["r","♜"],["b","♝"],["n","♞"]];
+    const chars = [["q","♛"],["r","♜"],["b","♝"],["n","♞"]];
     const cls = white ? "white-piece" : "black-piece";
 
     box.innerHTML = chars.map(([k, ch]) =>
@@ -290,7 +324,7 @@ class ChessGame {
     const draw = r === "1/2-1/2";
 
     icon.textContent  = won ? "🎉" : draw ? "🤝" : "💀";
-    title.textContent = won ? "You Win!" : draw ? "Draw" : "AI Wins";
+    title.textContent = won ? "You Win!" : draw ? "Draw" : `${this.loadedUsername || "AI"} Wins`;
     detail.textContent = data.termination || this._latestTermination || "";
 
     this._updateStatus({ gameOver: true, result: r, termination: data.termination || this._latestTermination, isCheck: false });
@@ -308,10 +342,9 @@ class ChessGame {
 
   _renderBoard() {
     const pieces    = this._parseFEN();
-    const turnChar  = this.fen.split(" ")[1];             // 'w' or 'b'
+    const turnChar  = this.fen.split(" ")[1];
     const kingInChk = this.isCheck ? this._findKing(turnChar === "w" ? "K" : "k") : null;
 
-    // Unique legal targets from selected square
     const targets = new Set(), captures = new Set();
     if (this.selectedSquare) {
       for (const m of this.legalMoves) {
@@ -388,15 +421,15 @@ class ChessGame {
   }
 
   _renderPlayers() {
-    const name = STYLE_NAMES[this.aiStyle];
+    const name = this.loadedUsername || "AI";
     const topCol    = this.flipped ? "white" : "black";
     const bottomCol = this.flipped ? "black" : "white";
     const isTopPlayer = this.playerColor === topCol;
 
     document.getElementById("top-icon").textContent    = topCol === "white" ? "♔" : "♚";
     document.getElementById("bottom-icon").textContent  = bottomCol === "white" ? "♔" : "♚";
-    document.getElementById("top-name").textContent    = isTopPlayer ? "You" : `AI \u00B7 ${name}`;
-    document.getElementById("bottom-name").textContent = isTopPlayer ? `AI \u00B7 ${name}` : "You";
+    document.getElementById("top-name").textContent    = isTopPlayer ? "You" : name;
+    document.getElementById("bottom-name").textContent = isTopPlayer ? name : "You";
   }
 
   _renderCaptured() {
@@ -448,8 +481,8 @@ class ChessGame {
       const won = (this.playerColor === "white" && r === "1-0")
                || (this.playerColor === "black" && r === "0-1");
       const txt = won ? `You win! ${data.termination || ""}` :
-                  r === "1/2-1/2" ? `Draw \u2014 ${data.termination || ""}` :
-                  `AI wins! ${data.termination || ""}`;
+                  r === "1/2-1/2" ? `Draw — ${data.termination || ""}` :
+                  `${this.loadedUsername || "AI"} wins! ${data.termination || ""}`;
       return this._setStatus(txt.trim(), "game-over");
     }
     if (data.isCheck) return this._setStatus("Check!", "in-check");
