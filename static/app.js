@@ -542,4 +542,11 @@ class ChessGame {
 }
 
 // ─── Bootstrap ───
-document.addEventListener("DOMContentLoaded", () => { window.game = new ChessGame(); });
+document.addEventListener("DOMContentLoaded", () => {
+  window.game = new ChessGame();
+  // Auto-load the default player
+  const input = document.getElementById("username-input");
+  if (input && input.value.trim()) {
+    window.game._loadPlayer();
+  }
+});
