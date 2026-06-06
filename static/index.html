@@ -7,111 +7,122 @@
   <title>Play Against Yourself AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <div class="app">
-    <!-- Header -->
+
+    <!-- ── Header ── -->
     <header class="header">
       <h1 class="title">♚ Play Against <span class="gradient-text">Yourself</span></h1>
       <p class="subtitle">Challenge the AI clone of any Chess.com player</p>
     </header>
 
-    <!-- Main game area -->
+    <!-- ── Game Area ── -->
     <main class="main">
-      <div class="game-area">
 
-        <!-- Board column -->
-        <div class="board-section">
-          <!-- Top player -->
-          <div class="player-row" id="top-player-row">
-            <div class="player-badge">
-              <span class="player-icon" id="top-icon">♚</span>
-              <span class="player-name" id="top-name">AI</span>
-            </div>
+      <!-- Board column -->
+      <div class="board-col">
+
+        <!-- AI player bar -->
+        <div class="player-bar" id="top-player-bar">
+          <div class="player-identity">
+            <span class="player-icon" id="top-icon">♚</span>
+            <span class="player-name" id="top-name">AI</span>
+          </div>
+          <div class="player-captures">
             <div class="captured-pieces" id="top-captured"></div>
             <div class="material-diff" id="top-diff"></div>
           </div>
+          <div class="clock" id="top-clock">10:00</div>
+        </div>
 
-          <!-- Board -->
-          <div class="board-wrapper" id="board-wrapper">
-            <div class="board" id="board"></div>
+        <!-- Board -->
+        <div class="board-wrapper" id="board-wrapper">
+          <div class="board" id="board"></div>
+        </div>
+
+        <!-- Human player bar -->
+        <div class="player-bar" id="bottom-player-bar">
+          <div class="player-identity">
+            <span class="player-icon" id="bottom-icon">♔</span>
+            <span class="player-name" id="bottom-name">You</span>
           </div>
-
-          <!-- Bottom player -->
-          <div class="player-row" id="bottom-player-row">
-            <div class="player-badge">
-              <span class="player-icon" id="bottom-icon">♔</span>
-              <span class="player-name" id="bottom-name">You</span>
-            </div>
+          <div class="player-captures">
             <div class="captured-pieces" id="bottom-captured"></div>
             <div class="material-diff" id="bottom-diff"></div>
           </div>
+          <div class="clock active-clock" id="bottom-clock">10:00</div>
         </div>
 
-        <!-- Side panel -->
-        <aside class="panel">
-          <!-- Opponent Username -->
-          <div class="panel-section">
-            <h3 class="section-title">Opponent</h3>
-            <div class="username-input-group">
-              <input type="text" id="username-input" class="username-input" 
-                     value="0khacha" placeholder="Chess.com username" spellcheck="false" />
-              <button class="btn btn-load" id="load-player">Load</button>
-            </div>
-            <div class="player-stats" id="player-stats">
-              <span class="stats-text">Enter a Chess.com username to play against</span>
-            </div>
-          </div>
-
-          <!-- Play As -->
-          <div class="panel-section">
-            <h3 class="section-title">Play As</h3>
-            <div class="color-buttons">
-              <button class="color-btn active" data-color="white">♔ White</button>
-              <button class="color-btn" data-color="black">♚ Black</button>
-            </div>
-          </div>
-
-          <!-- Status -->
-          <div class="panel-section">
-            <h3 class="section-title">Status</h3>
-            <div class="status" id="status">
-              <span class="status-dot"></span>
-              <span class="status-text">Load a player to start</span>
-            </div>
-          </div>
-
-          <!-- Moves -->
-          <div class="panel-section moves-section">
-            <h3 class="section-title">Moves</h3>
-            <div class="moves-list" id="moves"></div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="panel-actions">
-            <button class="btn btn-primary" id="new-game">⟳ New Game</button>
-            <button class="btn btn-secondary" id="flip-board">↕ Flip</button>
-          </div>
-
-          <!-- Board Size -->
-          <div class="panel-section">
-            <h3 class="section-title">Board Size</h3>
-            <div class="size-control">
-              <span style="font-size:0.8rem;opacity:0.5">▫</span>
-              <input type="range" class="size-slider" id="board-size" min="400" max="800" value="600" step="20" />
-              <span style="font-size:0.8rem;opacity:0.5">▪</span>
-              <span class="size-value" id="size-value">600</span>
-            </div>
-          </div>
-        </aside>
       </div>
+
+      <!-- Side panel -->
+      <aside class="panel">
+
+        <!-- Opponent -->
+        <div class="panel-block">
+          <div class="block-label">Opponent</div>
+          <div class="username-row">
+            <input type="text" id="username-input" class="username-input"
+                   value="0khacha" placeholder="Chess.com username" spellcheck="false" />
+            <button class="load-btn" id="load-player">Load</button>
+          </div>
+          <div class="player-stats" id="player-stats">
+            <span class="stats-text">Enter a Chess.com username</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Play As + Time Control (side by side) -->
+        <div class="two-col-blocks">
+          <div class="panel-block">
+            <div class="block-label">Play As</div>
+            <div class="seg-group">
+              <button class="seg-btn active" data-color="white">♔ White</button>
+              <button class="seg-btn" data-color="black">♚ Black</button>
+            </div>
+          </div>
+          <div class="panel-block">
+            <div class="block-label">Time</div>
+            <div class="time-grid">
+              <button class="time-btn active" data-minutes="10">10m</button>
+              <button class="time-btn" data-minutes="5">5m</button>
+              <button class="time-btn" data-minutes="3">3m</button>
+              <button class="time-btn" data-minutes="1">1m</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Status -->
+        <div class="status-row" id="status">
+          <span class="status-dot"></span>
+          <span class="status-text">Load a player to start</span>
+        </div>
+
+        <!-- Moves -->
+        <div class="panel-block moves-block">
+          <div class="block-label">Moves</div>
+          <div class="moves-list" id="moves"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-row">
+          <button class="action-btn primary" id="new-game">⟳ New Game</button>
+          <button class="action-btn secondary" id="flip-board">↕ Flip</button>
+        </div>
+
+      </aside>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-      Developed with <span class="heart">♥</span> by <a href="https://github.com/0khacha" target="_blank" rel="noopener">0khacha</a>
+      Developed with <span class="heart">♥</span> by
+      <a href="https://github.com/0khacha" target="_blank" rel="noopener">0khacha</a>
     </footer>
   </div>
 
@@ -123,13 +134,13 @@
     </div>
   </div>
 
-  <!-- Game-over overlay -->
+  <!-- Game-over modal -->
   <div class="modal-overlay" id="game-over-modal">
     <div class="modal-card game-over-card">
       <div class="game-over-icon" id="go-icon">♔</div>
       <h2 class="game-over-title" id="go-title">Game Over</h2>
       <p class="game-over-detail" id="go-detail"></p>
-      <button class="btn btn-primary" id="go-play-again">Play Again</button>
+      <button class="action-btn primary wide" id="go-play-again">Play Again</button>
     </div>
   </div>
 

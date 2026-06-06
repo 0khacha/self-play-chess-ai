@@ -31,21 +31,31 @@ class ChessGame {
     this.playerLoaded   = false;
     this.loadedUsername  = null;
 
+    // Timer state
+    this.timeMinutes    = 10;       // selected time control
+    this.playerTime     = 10 * 60; // seconds remaining for player
+    this.aiTime         = 10 * 60; // seconds remaining for AI
+    this.clockInterval  = null;     // setInterval handle
+    this.clockSide      = null;     // 'player' | 'ai' | null
+
     // DOM cache
-    this.boardEl   = document.getElementById("board");
-    this.wrapperEl = document.getElementById("board-wrapper");
-    this.statusEl  = document.getElementById("status");
-    this.movesEl   = document.getElementById("moves");
+    this.boardEl    = document.getElementById("board");
+    this.wrapperEl  = document.getElementById("board-wrapper");
+    this.statusEl   = document.getElementById("status");
+    this.movesEl    = document.getElementById("moves");
+    this.topClock   = document.getElementById("top-clock");
+    this.botClock   = document.getElementById("bottom-clock");
 
     this._bind();
     this._renderBoard();
     this._renderPlayers();
+    this._renderClocks();
   }
 
   // ──────────────── Event binding ────────────────
   _bind() {
     // Colour buttons
-    for (const b of document.querySelectorAll(".color-btn"))
+    for (const b of document.querySelectorAll(".seg-btn"))
       b.addEventListener("click", () => this._setColor(b.dataset.color));
 
     // Load player button
@@ -56,6 +66,21 @@ class ChessGame {
       if (e.key === "Enter") this._loadPlayer();
     });
 
+    // Time control buttons
+    for (const b of document.querySelectorAll(".time-btn")) {
+      b.addEventListener("click", () => {
+        this.timeMinutes = +b.dataset.minutes;
+        for (const x of document.querySelectorAll(".time-btn"))
+          x.classList.toggle("active", x === b);
+        // Reset clock displays to new time (only if game not started)
+        if (!this.gameStarted) {
+          this.playerTime = this.timeMinutes * 60;
+          this.aiTime     = this.timeMinutes * 60;
+          this._renderClocks();
+        }
+      });
+    }
+
     // Actions
     document.getElementById("new-game").addEventListener("click", () => this.newGame());
     document.getElementById("flip-board").addEventListener("click", () => this._flip());
@@ -64,25 +89,72 @@ class ChessGame {
       this.newGame();
     });
 
-    // Board size slider
-    const slider = document.getElementById("board-size");
-    const sizeLabel = document.getElementById("size-value");
-    const saved = localStorage.getItem("boardSize");
-    if (saved) { slider.value = saved; }
-    this._applyBoardSize(+slider.value, sizeLabel);
-    slider.addEventListener("input", () => {
-      this._applyBoardSize(+slider.value, sizeLabel);
-      localStorage.setItem("boardSize", slider.value);
-    });
-
     // Board clicks
     this.boardEl.addEventListener("click",       (e) => this._onSquareClick(e));
     this.boardEl.addEventListener("contextmenu", (e) => { e.preventDefault(); this.selectedSquare = null; this._renderBoard(); });
   }
 
-  _applyBoardSize(px, label) {
-    this.wrapperEl.style.setProperty("--board-size", px + "px");
-    if (label) label.textContent = px;
+  // ──────────────── Clock helpers ────────────────
+  _formatTime(secs) {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+
+  _renderClocks() {
+    // Determine which clock is top vs bottom based on flip + player colour
+    const playerIsBottom = !this.flipped;
+    const playerClock = playerIsBottom ? this.botClock : this.topClock;
+    const aiClock     = playerIsBottom ? this.topClock : this.botClock;
+
+    if (!playerClock || !aiClock) return;
+
+    playerClock.textContent = this._formatTime(this.playerTime);
+    aiClock.textContent     = this._formatTime(this.aiTime);
+
+    // Active glow
+    playerClock.classList.toggle("active-clock", this.clockSide === "player");
+    aiClock.classList.toggle("active-clock",     this.clockSide === "ai");
+
+    // Low time warning (< 30s)
+    playerClock.classList.toggle("low-time", this.playerTime < 30 && this.clockSide === "player");
+    aiClock.classList.toggle("low-time",     this.aiTime < 30 && this.clockSide === "ai");
+  }
+
+  _stopClock() {
+    if (this.clockInterval) {
+      clearInterval(this.clockInterval);
+      this.clockInterval = null;
+    }
+    this.clockSide = null;
+    this._renderClocks();
+  }
+
+  _startClock(side) {
+    this._stopClock();
+    this.clockSide = side;
+    this.clockInterval = setInterval(() => {
+      if (side === "player") {
+        this.playerTime = Math.max(0, this.playerTime - 1);
+        if (this.playerTime === 0) { this._stopClock(); this._onTimeout("player"); }
+      } else {
+        this.aiTime = Math.max(0, this.aiTime - 1);
+        if (this.aiTime === 0) { this._stopClock(); this._onTimeout("ai"); }
+      }
+      this._renderClocks();
+    }, 1000);
+    this._renderClocks();
+  }
+
+  _onTimeout(loser) {
+    this.gameOver = true;
+    const playerLost = loser === "player";
+    const result = playerLost
+      ? (this.playerColor === "white" ? "0-1" : "1-0")
+      : (this.playerColor === "white" ? "1-0" : "0-1");
+    this._latestResult      = result;
+    this._latestTermination = "Timeout";
+    setTimeout(() => this._showGameOver({ result, termination: "Timeout" }), 200);
   }
 
   // ──────────────── Load Player ────────────────
@@ -132,7 +204,7 @@ class ChessGame {
   // ──────────────── Settings ────────────────
   _setColor(c) {
     this.playerColor = c;
-    for (const b of document.querySelectorAll(".color-btn"))
+    for (const b of document.querySelectorAll(".seg-btn"))
       b.classList.toggle("active", b.dataset.color === c);
   }
 
@@ -150,6 +222,11 @@ class ChessGame {
       return;
     }
 
+    // Reset clocks
+    this._stopClock();
+    this.playerTime = this.timeMinutes * 60;
+    this.aiTime     = this.timeMinutes * 60;
+
     this.moveList       = [];
     this.lastMove       = null;
     this.selectedSquare = null;
@@ -160,6 +237,7 @@ class ChessGame {
     this.flipped        = this.playerColor === "black";
 
     this._setStatus("Starting game…", "thinking");
+    this._renderClocks();
 
     try {
       const data = await this._api("/api/start", {
@@ -174,6 +252,11 @@ class ChessGame {
       if (data.aiMove) {
         this.lastMove = { from: data.aiMove.from, to: data.aiMove.to };
         this.moveList.push({ san: data.aiMove.san, color: "white" });
+        // AI moved first (player is black), start player clock
+        this._startClock("player");
+      } else {
+        // Player moves first (white), start player clock
+        this._startClock("player");
       }
 
       this._renderAll();
@@ -249,6 +332,9 @@ class ChessGame {
     this.wrapperEl.classList.add("thinking");
     this._renderBoard();
 
+    // Switch clock to AI while it thinks
+    this._startClock("ai");
+
     try {
       const data = await this._api("/api/move", {
         fen: this.fen, move: uci,
@@ -257,6 +343,7 @@ class ChessGame {
         this._setStatus("Illegal move", "game-over");
         this.aiThinking = false;
         this.wrapperEl.classList.remove("thinking");
+        this._startClock("player");
         return;
       }
 
@@ -283,11 +370,16 @@ class ChessGame {
     this.aiThinking = false;
     this.wrapperEl.classList.remove("thinking");
     this._renderAll();
+
     if (this.gameOver) {
-      const d = { result: null, termination: "" };
-      d.result      = this._latestResult || "1/2-1/2";
-      d.termination = this._latestTermination || "";
-      setTimeout(() => this._showGameOver(d), 500);
+      this._stopClock();
+      setTimeout(() => this._showGameOver({
+        result: this._latestResult || "1/2-1/2",
+        termination: this._latestTermination || "",
+      }), 500);
+    } else {
+      // Give clock back to player
+      this._startClock("player");
     }
   }
 
@@ -506,7 +598,7 @@ class ChessGame {
   }
 
   _setStatus(text, cls) {
-    this.statusEl.className = "status " + (cls || "");
+    this.statusEl.className = "status-row " + (cls || "");
     this.statusEl.querySelector(".status-text").textContent = text;
   }
 
