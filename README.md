@@ -113,7 +113,6 @@ The trained model is saved as `output/models/clone_<username>.pt` and automatica
 SelfPlayChessAI/
 |-- play.py                  # Flask web server (main entry point)
 |-- train_for_user.py        # Train a per-user clone model
-|-- train.py                 # Generic training pipeline
 |-- config.py                # All configuration and hyperparameters
 |-- requirements.txt
 |
@@ -121,11 +120,9 @@ SelfPlayChessAI/
 |   |-- clone_agent.py       # CloneAgent: book + neural + SEE filter
 |   |-- network.py           # ChessStyleNetwork (ResNet CNN)
 |   |-- encoding.py          # Board encoding (18 planes) + AlphaZero move encoding (4672)
-|   |-- inference.py         # Standalone inference utilities
-|   |-- book_agent.py        # Legacy BookAgent (Stockfish fallback)
 |
 |-- data/
-|   |-- fetcher.py           # Chess.com API game fetcher
+|   |-- fetcher.py           # Chess.com API game fetcher with caching
 |   |-- parser.py            # PGN parser -> GameRecord objects
 |   |-- labeler.py           # Style labeling (Normal/Aggressive/Defensive)
 |   |-- dataset.py           # PyTorch dataset with game-based splitting
@@ -138,9 +135,11 @@ SelfPlayChessAI/
 |   |-- style.css            # Premium dark theme CSS
 |   |-- app.js               # Chess game logic + board rendering
 |
+|-- utils/
+|   |-- helpers.py           # Logging setup + board utilities
+|
 |-- output/
 |   |-- models/              # Trained .pt model files
-|   |-- games/               # Self-play PGN records
 |   |-- logs/                # Training logs
 ```
 

@@ -5,7 +5,6 @@ import os
 import logging
 import datetime
 import chess
-import chess.pgn
 
 
 def setup_logging(name: str = "chess_ai", log_dir: str = None) -> logging.Logger:
@@ -38,32 +37,6 @@ def setup_logging(name: str = "chess_ai", log_dir: str = None) -> logging.Logger
     return logger
 
 
-def write_pgn(game: chess.pgn.Game, filepath: str) -> None:
-    """Write a chess.pgn.Game object to a PGN file."""
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "w", encoding="utf-8") as f:
-        print(game, file=f)
-
-
-def append_pgn(game: chess.pgn.Game, filepath: str) -> None:
-    """Append a chess.pgn.Game to an existing PGN file."""
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    with open(filepath, "a", encoding="utf-8") as f:
-        print(game, file=f)
-        print(file=f)  # blank line separator
-
-
-def format_result(result: str) -> str:
-    """Format a game result string for display."""
-    mapping = {
-        "1-0": "White wins",
-        "0-1": "Black wins",
-        "1/2-1/2": "Draw",
-        "*": "Ongoing",
-    }
-    return mapping.get(result, result)
-
-
 def board_material_count(board: chess.Board, color: chess.Color) -> int:
     """
     Count material value for a given color.
@@ -80,16 +53,6 @@ def board_material_count(board: chess.Board, color: chess.Color) -> int:
     for piece_type, value in values.items():
         total += len(board.pieces(piece_type, color)) * value
     return total
-
-
-def material_balance(board: chess.Board) -> int:
-    """
-    Return material balance from White's perspective.
-    Positive = White has more material.
-    """
-    return board_material_count(board, chess.WHITE) - board_material_count(
-        board, chess.BLACK
-    )
 
 
 def king_zone_squares(board: chess.Board, color: chess.Color) -> set:

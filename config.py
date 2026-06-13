@@ -21,33 +21,14 @@ for d in [OUTPUT_DIR, MODELS_DIR, GAMES_DIR, LOGS_DIR, RAW_DATA_DIR]:
 # Chess.com API
 # ---------------------------------------------
 CHESS_COM_USERNAME = "0khacha"
-
-CHESS_COM_ARCHIVES = [
-    "https://api.chess.com/pub/player/0khacha/games/2025/04",
-    "https://api.chess.com/pub/player/0khacha/games/2025/05",
-    "https://api.chess.com/pub/player/0khacha/games/2025/06",
-    "https://api.chess.com/pub/player/0khacha/games/2025/07",
-    "https://api.chess.com/pub/player/0khacha/games/2025/08",
-    "https://api.chess.com/pub/player/0khacha/games/2025/09",
-    "https://api.chess.com/pub/player/0khacha/games/2025/10",
-    "https://api.chess.com/pub/player/0khacha/games/2025/11",
-    "https://api.chess.com/pub/player/0khacha/games/2025/12",
-    "https://api.chess.com/pub/player/0khacha/games/2026/01",
-    "https://api.chess.com/pub/player/0khacha/games/2026/02",
-    "https://api.chess.com/pub/player/0khacha/games/2026/03",
-    "https://api.chess.com/pub/player/0khacha/games/2026/04",
-    "https://api.chess.com/pub/player/0khacha/games/2026/05",
-]
-
 API_USER_AGENT = "SelfPlayChessAI/1.0 (chess-ml-research)"
-API_RATE_LIMIT_SECONDS = 1.0  # seconds between requests
+API_RATE_LIMIT_SECONDS = 1.0
 
 # ---------------------------------------------
-# Stockfish (optional)
+# Stockfish (optional, used for move labeling)
 # ---------------------------------------------
 # Set to None to use heuristic-only labeling.
-# Otherwise, set to the path of your Stockfish binary.
-STOCKFISH_PATH = os.path.join(PROJECT_ROOT, "stockfish", "stockfish", "stockfish-windows-x86-64-avx2.exe")
+STOCKFISH_PATH = os.path.join(PROJECT_ROOT, "stockfish", "stockfish-windows-x86-64-avx2.exe")
 STOCKFISH_DEPTH = 12
 STOCKFISH_THREADS = 2
 STOCKFISH_HASH_MB = 256
@@ -55,13 +36,10 @@ STOCKFISH_HASH_MB = 256
 # ---------------------------------------------
 # Style Labeling Thresholds (centipawns)
 # ---------------------------------------------
-# Aggressive: move causes eval drop but creates threats
-AGGRESSIVE_EVAL_DROP = -50          # eval drops more than this (centipawns)
-AGGRESSIVE_MATERIAL_SACRIFICE = True # flagged when player loses material
-
-# Defensive: move keeps eval stable, simplifies
-DEFENSIVE_EVAL_STABILITY = 30       # eval change stays within this range
-DEFENSIVE_SIMPLIFICATION = True     # traded pieces = defensive
+AGGRESSIVE_EVAL_DROP = -50
+AGGRESSIVE_MATERIAL_SACRIFICE = True
+DEFENSIVE_EVAL_STABILITY = 30
+DEFENSIVE_SIMPLIFICATION = True
 
 # ---------------------------------------------
 # Board Encoding
@@ -110,18 +88,10 @@ VALIDATION_SPLIT = 0.15
 LABEL_SMOOTHING = 0.1
 CHECKPOINT_NAME = "chess_style_model.pt"
 
-# ---------------------------------------------
-# Self-Play
-# ---------------------------------------------
-SELFPLAY_GAMES_PER_MATCHUP = 10   # per color, so 20 total per pair
-SELFPLAY_TEMPERATURE = 0.5
-SELFPLAY_MAX_MOVES = 200          # per side (400 half-moves)
-INFERENCE_TOP_K = 5               # sample from top-k moves at inference
-
 # Data filtering
-MIN_GAME_HALFMOVES = 14           # skip very short games
-SKIP_OPENING_MOVES = 6            # skip first N full moves (book territory)
-MIN_TIME_CONTROL_SECONDS = 180    # filter out bullet games (< 3 min)
+MIN_GAME_HALFMOVES = 14
+SKIP_OPENING_MOVES = 6
+MIN_TIME_CONTROL_SECONDS = 180
 
 # ---------------------------------------------
 # Device

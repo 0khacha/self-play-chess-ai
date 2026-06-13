@@ -172,9 +172,8 @@ def fetch_all_games(
 
     Parameters
     ----------
-    archives : list[str], optional
-        List of Chess.com archive API URLs.  Defaults to
-        ``config.CHESS_COM_ARCHIVES``.
+    archives : list[str]
+        List of Chess.com archive API URLs.
     username : str, optional
         Chess.com username (used only for logging context).
         Defaults to ``config.CHESS_COM_USERNAME``.
@@ -187,7 +186,7 @@ def fetch_all_games(
         when available.
     """
     if archives is None:
-        archives = config.CHESS_COM_ARCHIVES
+        raise ValueError("archives list is required")
     if username is None:
         username = config.CHESS_COM_USERNAME
 
