@@ -1,251 +1,221 @@
-# ♟️ Play Against Yourself AI
+# Play Against Yourself AI
 
-Train a personalized chess AI from your **Chess.com** game history, then play against it in a sleek dark-themed web interface. The AI learns your playing style and uses **Stockfish** as a tactical backbone to ensure it never makes dumb moves.
+> Challenge a clone of any Chess.com player -- built from their real game history.
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![python-chess](https://img.shields.io/badge/python--chess-1.10%2B-green)](https://python-chess.readthedocs.io)
+Enter any Chess.com username, and the AI builds a playing profile from their archived games.
+It replays their actual moves in known positions and uses a neural network with tactical safety filters for novel ones.
 
----
+**No Stockfish required.** Everything runs locally.
 
-## ✨ Features
-
-- **🧠 Style-Conditioned Neural Network** — A single ResNet model that adapts its play based on a style token (Normal / Aggressive / Defensive)
-- **🐟 Hybrid Engine** — Combines your trained neural model with Stockfish: your style + no blunders
-- **🎮 Web Interface** — Dark-themed, responsive chess board with click-to-move, move history, captured pieces, and game-over modals
-- **⚔️ Self-Play Tournament** — Round-robin between all 3 style variants with full PGN output and statistics
-- **📊 Smart Data Pipeline** — Game-based train/val splitting (no data leakage), opening book filtering, bullet game exclusion, horizontal flip augmentation
+![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+![Flask](https://img.shields.io/badge/backend-Flask-lightgrey)
+![PyTorch](https://img.shields.io/badge/model-PyTorch-red)
 
 ---
 
-## 🚀 Quick Start
+## How It Works
 
-### 1. Clone & install
+```
+User enters a Chess.com username
+          |
+          v
+    +-------------+
+    | PlayerBook  |  Fetches all archived games via Chess.com API
+    |             |  Builds FEN -> {move: frequency} map
+    +------+------+
+           |
+           v
+    +------+------+
+    | CloneAgent  |  Plays the game move-by-move
+    +------+------+
+           |
+     +-----+-----+
+     |           |
+  Book hit?   Book miss?
+     |           |
+  Weighted    Neural policy network
+  random      scores all legal moves
+  from the         |
+  player's    SEE tactical filter
+  history     (removes blunders)
+                   |
+              Best safe move
+```
+
+### Move Selection Priority
+
+| Priority | Source | Description |
+|----------|--------|-------------|
+| 1 | **Position Book** | Exact FEN match -- plays the player's actual historical move (weighted by frequency) |
+| 2 | **Neural Network** | ResNet policy network scores all 4672 legal move encodings |
+| 3 | **SEE Tactical Filter** | Static Exchange Evaluation removes moves that hang material |
+| 4 | **Forced Move** | If all moves lose material, plays the highest-scored one anyway |
+
+---
+
+## Features
+
+- **Clone any Chess.com player** -- enter a username, play against their style
+- **Chess clocks** -- 10min / 5min / 3min / 1min time controls
+- **No engine dependency** -- pure neural network + book + SEE filter
+- **Per-user model training** -- train a dedicated model for better accuracy
+- **Dark premium UI** -- glassmorphism, animations, responsive layout
+- **Castling support** -- click the rook or the king's destination square
+- **Full game tracking** -- move list, captured pieces, material diff
+
+---
+
+## Quick Start
+
+### 1. Install dependencies
 
 ```bash
-git clone https://github.com/0khacha/self-play-chess-ai.git
-cd self-play-chess-ai
 pip install -r requirements.txt
 ```
 
-### 2. Download Stockfish (recommended)
+**Requirements:**
+- Python 3.10+
+- `python-chess` >= 1.10.0
+- `torch` >= 2.0.0
+- `flask` >= 3.0.0
+- `requests`, `numpy`, `tqdm`, `matplotlib`
 
-Download from **https://stockfishchess.org/download/** and place the binary in the project:
-
-```bash
-# Windows (PowerShell)
-Invoke-WebRequest -Uri "https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-windows-x86-64-avx2.zip" -OutFile stockfish.zip
-Expand-Archive stockfish.zip -DestinationPath stockfish
-
-# Linux/Mac
-wget https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-ubuntu-x86-64-avx2.tar
-tar xf stockfish-ubuntu-x86-64-avx2.tar -C stockfish
-```
-
-Then set the path in `config.py`:
-```python
-STOCKFISH_PATH = os.path.join(PROJECT_ROOT, "stockfish", "stockfish", "stockfish-windows-x86-64-avx2.exe")
-# Or for Linux: "/path/to/stockfish/stockfish-ubuntu-x86-64-avx2"
-```
-
-### 3. Configure your username
-
-Edit `config.py`:
-```python
-CHESS_COM_USERNAME = "your_chess_com_username"
-
-CHESS_COM_ARCHIVES = [
-    "https://api.chess.com/pub/player/your_username/games/2025/01",
-    "https://api.chess.com/pub/player/your_username/games/2025/02",
-    # add more months as needed
-]
-```
-
-### 4. Train the model
-
-```bash
-python train.py
-```
-
-This will:
-1. Fetch all your games from Chess.com (cached after first run)
-2. Filter out bullet games (< 3 min) and skip opening book moves
-3. Label each move as Normal / Aggressive / Defensive
-4. Train a style-conditioned neural network with augmentation
-5. Save the best model to `output/models/chess_style_model.pt`
-
-### 5. Play against your AI!
+### 2. Run the server
 
 ```bash
 python play.py
 ```
 
-Open **http://localhost:5000** in your browser. Pick a style, pick your color, and start playing!
+Open **http://localhost:5000** in your browser.
 
-### 6. (Optional) Run a self-play tournament
+The default player (`0khacha`) is pre-loaded automatically. Enter any Chess.com username and click **Load** to play against someone else.
+
+### 3. (Optional) Train a dedicated model
+
+For better accuracy on novel positions, train a model specifically for a player:
 
 ```bash
-python self_play.py
+# Train for the default user
+python train_for_user.py
+
+# Train for any Chess.com username
+python train_for_user.py --user hikaru --epochs 40
 ```
+
+The trained model is saved as `output/models/clone_<username>.pt` and automatically used by the server when that username is loaded.
 
 ---
 
-## 🎮 Web Interface
-
-The web UI features:
-- **Dark theme** with glassmorphism panels and ambient lighting
-- **Wooden board frame** with crisp piece rendering
-- **Click-to-move** with legal move hints (dots for empty squares, rings for captures)
-- **3 AI personalities** — Normal, Aggressive, Defensive
-- **Move history** panel with algebraic notation
-- **Captured pieces** display with material advantage
-- **Game-over modal** with play-again option
-- **AI thinking indicator** with pulsing glow animation
-
----
-
-## 🏗️ Architecture
-
-### Hybrid Engine (Neural + Stockfish)
-
-```
-Position
-    │
-    ├── Stockfish (depth 10) ──→ Top 10 safe moves + evaluations
-    │                               │
-    │                               ▼
-    │                        Filter blunders
-    │                        (> 150cp loss)
-    │                               │
-    └── Neural Model ──────→ Style scores for each safe move
-                                    │
-                                    ▼
-                            Pick highest combined score
-                            (style match + tactical quality)
-```
-
-**Result:** Plays like you, but never hangs a piece.
-
-### Neural Network
-
-```
-Input: board (18×8×8) + style token (0/1/2)
-    │
-    ├── Style Embedding: nn.Embedding(3, 8) → broadcast to 8×8×8
-    │
-    ▼
-Concatenate → 26×8×8
-    │
-Conv 26→128, 3×3 + BN + ReLU
-    │
-6× Residual Blocks (128→128)
-    │
-Policy Head: Conv 128→32 (1×1) + Dropout(0.3) + FC(2048→4672)
-    │
-Logits (4672) → masked to legal moves
-```
-
-### Board Encoding — 18 planes × 8×8
-
-| Planes | Content |
-|--------|---------|
-| 0–5    | Current player's pieces (P, N, B, R, Q, K) |
-| 6–11   | Opponent's pieces (P, N, B, R, Q, K) |
-| 12     | Side to move |
-| 13–14  | Current player's castling rights |
-| 15–16  | Opponent's castling rights |
-| 17     | En passant target square |
-
-### Move Encoding — AlphaZero-style 4672
-
-- 64 from-squares × 73 move types = **4672 total**
-- 56 queen-type moves (8 directions × 7 distances)
-- 8 knight moves + 9 underpromotions
-
----
-
-## 📂 Project Structure
+## Project Structure
 
 ```
 SelfPlayChessAI/
-├── train.py                  # Training pipeline entry point
-├── self_play.py              # Self-play tournament runner
-├── play.py                   # Web server (Flask)
-├── config.py                 # All settings in one place
-│
-├── data/
-│   ├── fetcher.py            # Chess.com API with caching + bullet filtering
-│   ├── parser.py             # PGN → (FEN, move) with opening skip
-│   ├── labeler.py            # Multi-indicator style labeling
-│   └── dataset.py            # Game-based split + flip augmentation
-│
-├── model/
-│   ├── encoding.py           # Board → 18×8×8 tensor + 4672-move vocab
-│   ├── network.py            # Style-conditioned ResNet + Dropout
-│   ├── inference.py          # Pure neural agent with top-k sampling
-│   └── hybrid_agent.py       # Neural + Stockfish hybrid agent
-│
-├── training/
-│   └── trainer.py            # Training loop with label smoothing
-│
-├── selfplay/
-│   ├── engine.py             # Single game player
-│   ├── tournament.py         # Round-robin manager
-│   └── stats.py              # Statistics + charts
-│
-├── static/
-│   ├── index.html            # Chess board UI
-│   ├── style.css             # Dark theme stylesheet
-│   └── app.js                # Client-side game logic
-│
-└── output/
-    ├── models/               # Saved checkpoints (.pt)
-    ├── games/                # Self-play PGN files
-    ├── logs/                 # Training logs + charts
-    └── raw/                  # Cached API responses
+|-- play.py                  # Flask web server (main entry point)
+|-- train_for_user.py        # Train a per-user clone model
+|-- train.py                 # Generic training pipeline
+|-- config.py                # All configuration and hyperparameters
+|-- requirements.txt
+|
+|-- model/
+|   |-- clone_agent.py       # CloneAgent: book + neural + SEE filter
+|   |-- network.py           # ChessStyleNetwork (ResNet CNN)
+|   |-- encoding.py          # Board encoding (18 planes) + AlphaZero move encoding (4672)
+|   |-- inference.py         # Standalone inference utilities
+|   |-- book_agent.py        # Legacy BookAgent (Stockfish fallback)
+|
+|-- data/
+|   |-- fetcher.py           # Chess.com API game fetcher
+|   |-- parser.py            # PGN parser -> GameRecord objects
+|   |-- labeler.py           # Style labeling (Normal/Aggressive/Defensive)
+|   |-- dataset.py           # PyTorch dataset with game-based splitting
+|
+|-- training/
+|   |-- trainer.py           # Training loop with early stopping
+|
+|-- static/
+|   |-- index.html           # Game UI
+|   |-- style.css            # Premium dark theme CSS
+|   |-- app.js               # Chess game logic + board rendering
+|
+|-- output/
+|   |-- models/              # Trained .pt model files
+|   |-- games/               # Self-play PGN records
+|   |-- logs/                # Training logs
 ```
 
 ---
 
-## ⚙️ Configuration
+## Architecture
+
+### Neural Network
+
+**ChessStyleNetwork** -- a residual CNN conditioned on playing style:
+
+| Component | Details |
+|-----------|---------|
+| Input | 18-plane 8x8 board encoding (perspective-relative) |
+| Style embedding | 3 styles (Normal, Aggressive, Defensive) -> 8-dim -> broadcast to 8x8 |
+| Initial conv | 26 -> 128 channels, 3x3, BatchNorm, ReLU |
+| Residual tower | 6 ResidualBlocks (128 channels each) |
+| Policy head | Conv 128->32, 1x1 -> Dropout(0.3) -> FC(2048 -> 4672) |
+| Output | 4672 logits (AlphaZero move encoding) |
+| Parameters | ~1.6M |
+
+### Board Encoding (18 planes)
+
+| Planes | Content |
+|--------|---------|
+| 0-5 | Current player's pieces (P, N, B, R, Q, K) |
+| 6-11 | Opponent's pieces |
+| 12 | Side to move (constant 1) |
+| 13-16 | Castling rights (KQkq) |
+| 17 | En passant square |
+
+### Tactical Filter (SEE)
+
+Static Exchange Evaluation prevents the neural network from making blunders:
+
+1. Score all legal moves with the neural network
+2. Take the top-5 candidates
+3. For each candidate, simulate the move and check if any of our pieces can be captured for a net material gain
+4. Play the highest-scoring **safe** move
+5. If no move is safe (zugzwang), play the highest-scored one anyway
+
+---
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/` | Serve the game UI |
+| `POST` | `/api/load_player` | Load a Chess.com player's games. Body: `{"username": "..."}` |
+| `POST` | `/api/start` | Start a new game. Body: `{"playerColor": "white"\|"black"}` |
+| `POST` | `/api/move` | Make a move. Body: `{"fen": "...", "move": "e2e4"}` |
+
+---
+
+## Configuration
 
 All settings are in [`config.py`](config.py):
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `CHESS_COM_USERNAME` | `"0khacha"` | Your Chess.com username |
-| `STOCKFISH_PATH` | Auto-detected | Path to Stockfish binary |
-| `STYLE_EMBED_DIM` | `8` | Style embedding dimensions |
-| `NUM_FILTERS` | `128` | CNN filter count |
-| `NUM_RESIDUAL_BLOCKS` | `6` | Residual tower depth |
-| `BATCH_SIZE` | `256` | Training batch size |
-| `LEARNING_RATE` | `1e-3` | Adam learning rate |
-| `WEIGHT_DECAY` | `1e-3` | L2 regularization strength |
-| `LABEL_SMOOTHING` | `0.1` | Cross-entropy label smoothing |
-| `VALIDATION_SPLIT` | `0.15` | Fraction held for validation |
-| `EARLY_STOPPING_PATIENCE` | `8` | Epochs before stopping |
-| `INFERENCE_TOP_K` | `5` | Top-k sampling for neural-only mode |
-| `MIN_TIME_CONTROL_SECONDS` | `180` | Min time control (filters bullet) |
-| `SKIP_OPENING_MOVES` | `6` | Opening moves to skip |
+| `CHESS_COM_USERNAME` | `0khacha` | Default player to pre-load |
+| `NUM_FILTERS` | 128 | ResNet channel width |
+| `NUM_RESIDUAL_BLOCKS` | 6 | Depth of the residual tower |
+| `BATCH_SIZE` | 256 | Training batch size |
+| `LEARNING_RATE` | 1e-3 | Adam learning rate |
+| `LABEL_SMOOTHING` | 0.1 | Cross-entropy label smoothing |
+| `NUM_EPOCHS` | 50 | Max training epochs |
+| `EARLY_STOPPING_PATIENCE` | 8 | Stop after N epochs without improvement |
 
 ---
 
-## 🧪 Anti-Overfitting Measures
+## License
 
-| Technique | Implementation |
-|-----------|---------------|
-| **Game-based split** | Train/val split by game, not sample — no data leakage |
-| **Horizontal flip augmentation** | Mirror positions kingside↔queenside to 2× data |
-| **Dropout (0.3)** | Before the policy FC layer |
-| **Label smoothing (0.1)** | Prevents overconfident predictions |
-| **Weight decay (1e-3)** | L2 regularization on all parameters |
-| **Multi-indicator labeling** | Requires 2+ signals for aggressive/defensive labels |
-| **Opening filtering** | First 6 moves excluded (book territory) |
-| **Bullet filtering** | Games < 3 min excluded (hasty moves ≠ real style) |
+MIT License -- see [LICENSE](LICENSE).
 
 ---
 
-## 📄 License
-
-MIT — see [LICENSE](LICENSE)
+Built with <3 by [0khacha](https://github.com/0khacha)

@@ -40,7 +40,7 @@ def main():
 
     print()
     print("=" * 60)
-    print(f"  Clone Model Training  →  {username}")
+    print(f"  Clone Model Training  ->  {username}")
     print("=" * 60)
     print(f"  Device   : {config.DEVICE}")
     print(f"  Save to  : {model_path}")
