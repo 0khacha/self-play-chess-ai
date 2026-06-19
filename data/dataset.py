@@ -128,6 +128,7 @@ class ChessStyleDataset(Dataset):
         style_ids: list[int] = []
         move_indices: list[int] = []
         skipped = 0
+        original_count = 0
 
         for sample in tqdm(samples, desc="Encoding samples", unit="sample"):
             try:
@@ -139,6 +140,7 @@ class ChessStyleDataset(Dataset):
                 board_tensors.append(bt)
                 style_ids.append(sample.style)
                 move_indices.append(mi)
+                original_count += 1
 
                 # --- Horizontal flip augmentation ---
                 if augment:
@@ -174,10 +176,11 @@ class ChessStyleDataset(Dataset):
             self.style_ids = torch.tensor(style_ids, dtype=torch.long)
             self.move_indices = torch.tensor(move_indices, dtype=torch.long)
 
+        num_augmented = len(self.board_tensors) - original_count
         logger.info(
             "Dataset created — %d samples encoded (%d augmented), %d skipped",
             len(self.board_tensors),
-            len(self.board_tensors) - len(samples) + skipped,
+            num_augmented,
             skipped,
         )
 

@@ -1,2 +1,1 @@
-# This directory caches raw JSON responses from the Chess.com API.
-# Files are re-used automatically on subsequent runs (no re-fetching needed).
+ 

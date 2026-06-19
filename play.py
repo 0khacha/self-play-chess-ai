@@ -10,12 +10,18 @@ Run:
 Then open http://localhost:5000 in your browser.
 """
 
+from __future__ import annotations
+
+import io
 import os
 import sys
 import logging
+from datetime import date
+from typing import Optional
 
 from flask import Flask, request, jsonify, send_from_directory
 import chess
+import chess.pgn
 
 import config
 from model.clone_agent import PlayerBook, CloneAgent
@@ -28,8 +34,14 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 # Global agent state
-_current_agent: CloneAgent | None = None
-_current_username: str | None = None
+_current_agent: Optional[CloneAgent] = None
+_current_username: Optional[str] = None
+
+# Board / game tracking  (session-based, single-player server)
+_current_board: Optional[chess.Board] = None
+_move_history: list[chess.Move] = []
+_game_id: int = 0
+_player_color: Optional[str] = None
 
 # Neural model path (shared across all player loads)
 _MODEL_PATH = os.path.join(config.MODELS_DIR, config.CHECKPOINT_NAME)
@@ -80,6 +92,41 @@ def _move_info(move: chess.Move, san: str) -> dict:
     }
 
 
+def _build_pgn(
+    moves: list[chess.Move],
+    player_color: str,
+    username: str,
+    result: str,
+) -> str:
+    """Build a PGN string from the recorded move history."""
+    game = chess.pgn.Game()
+
+    # Headers
+    game.headers["Event"] = "Play Against Yourself AI"
+    game.headers["Site"] = "localhost"
+    game.headers["Date"] = date.today().strftime("%Y.%m.%d")
+
+    if player_color == "white":
+        game.headers["White"] = username or "Player"
+        game.headers["Black"] = f"CloneAI ({_current_username or 'unknown'})"
+    else:
+        game.headers["White"] = f"CloneAI ({_current_username or 'unknown'})"
+        game.headers["Black"] = username or "Player"
+
+    game.headers["Result"] = result
+
+    # Replay moves onto the game node tree
+    node = game
+    board = chess.Board()
+    for move in moves:
+        if move in board.legal_moves:
+            node = node.add_variation(move)
+            board.push(move)
+
+    exporter = chess.pgn.StringExporter(headers=True, variations=False, comments=False)
+    return game.accept(exporter)
+
+
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
@@ -124,22 +171,33 @@ def load_player():
 @app.route("/api/start", methods=["POST"])
 def start_game():
     """Start a new game.  If the player chose black, the AI plays first."""
+    global _current_board, _move_history, _game_id, _player_color
+
     data         = request.json or {}
     player_color = data.get("playerColor", "white")
 
     if _current_agent is None:
         return jsonify({"success": False, "error": "No player loaded"}), 400
 
-    board      = chess.Board()
-    resp       = _board_state(board)
+    # Initialise fresh board with full history tracking
+    _game_id += 1
+    _current_board = chess.Board()
+    _move_history = []
+    _player_color = player_color
+
+    board = _current_board
+    resp  = _board_state(board)
     resp["aiMove"] = None
+    resp["gameId"] = _game_id
 
     if player_color == "black":
         ai_move = _current_agent.select_move(board)
         san     = board.san(ai_move)
         board.push(ai_move)
+        _move_history.append(ai_move)
         resp = _board_state(board)
         resp["aiMove"] = _move_info(ai_move, san)
+        resp["gameId"] = _game_id
 
     return jsonify(resp)
 
@@ -147,14 +205,25 @@ def start_game():
 @app.route("/api/move", methods=["POST"])
 def make_move():
     """Accept the player's move, validate it, then let the AI respond."""
+    global _current_board, _move_history
+
     data     = request.json
-    fen      = data["fen"]
     move_uci = data["move"]
 
     if _current_agent is None:
         return jsonify({"success": False, "error": "No player loaded"}), 400
 
-    board = chess.Board(fen)
+    # Use the tracked board (full history) for proper draw detection.
+    # Fall back to FEN reconstruction if no tracked board exists (e.g. a
+    # client reconnected with only a FEN).
+    if _current_board is None:
+        fen = data.get("fen")
+        if fen is None:
+            return jsonify({"success": False, "error": "No active game"}), 400
+        _current_board = chess.Board(fen)
+        _move_history = []
+
+    board = _current_board
 
     try:
         move = chess.Move.from_uci(move_uci)
@@ -165,6 +234,7 @@ def make_move():
 
     player_san = board.san(move)
     board.push(move)
+    _move_history.append(move)
 
     resp = {"success": True, "playerMove": _move_info(move, player_san), "aiMove": None}
     resp.update(_board_state(board))
@@ -175,10 +245,89 @@ def make_move():
     ai_move = _current_agent.select_move(board)
     ai_san  = board.san(ai_move)
     board.push(ai_move)
+    _move_history.append(ai_move)
 
     resp["aiMove"] = _move_info(ai_move, ai_san)
     resp.update(_board_state(board))
     return jsonify(resp)
+
+
+@app.route("/api/undo", methods=["POST"])
+def undo_move():
+    """
+    Undo the last TWO half-moves (player move + AI response) so it is
+    the player's turn again.  Returns the resulting board state.
+    """
+    global _current_board, _move_history
+
+    if _current_board is None:
+        return jsonify({"success": False, "error": "No active game"}), 400
+
+    board = _current_board
+
+    # We need at least two moves on the stack to undo a full pair
+    moves_to_undo = min(2, len(_move_history))
+    if moves_to_undo == 0:
+        return jsonify({"success": False, "error": "Nothing to undo"}), 400
+
+    for _ in range(moves_to_undo):
+        board.pop()
+        _move_history.pop()
+
+    resp = {"success": True}
+    resp.update(_board_state(board))
+    return jsonify(resp)
+
+
+@app.route("/api/resign", methods=["POST"])
+def resign_game():
+    """
+    The player resigns.  Returns the result string based on the player's
+    colour (the side that resigned loses).
+    """
+    if _current_board is None:
+        return jsonify({"success": False, "error": "No active game"}), 400
+
+    # Determine result: the player loses
+    if _player_color == "white":
+        result = "0-1"
+    else:
+        result = "1-0"
+
+    return jsonify({
+        "success": True,
+        "result": result,
+        "termination": "Resignation",
+    })
+
+
+@app.route("/api/export_pgn", methods=["POST"])
+def export_pgn():
+    """
+    Generate and return a PGN string for the current (or just-finished) game.
+
+    Expected body keys (all optional – server-side state is preferred):
+      - ``username``    – human player's name for PGN headers.
+      - ``playerColor`` – ``"white"`` or ``"black"``.
+    """
+    data = request.json or {}
+    username = data.get("username", "Player")
+    player_color = data.get("playerColor", _player_color or "white")
+
+    if not _move_history:
+        return jsonify({"success": False, "error": "No moves to export"}), 400
+
+    # Determine the result
+    board = _current_board
+    if board is not None and board.is_game_over(claim_draw=True):
+        outcome = board.outcome(claim_draw=True)
+        result = outcome.result() if outcome else "*"
+    else:
+        result = "*"
+
+    pgn_str = _build_pgn(_move_history, player_color, username, result)
+
+    return jsonify({"success": True, "pgn": pgn_str})
 
 
 # ---------------------------------------------------------------------------
@@ -198,7 +347,7 @@ if __name__ == "__main__":
         print(f"  Neural model : {_MODEL_PATH}")
     else:
         print(f"  Neural model : NOT FOUND – book-only fallback")
-        print(f"    (run  python train.py  to train the model)")
+        print(f"    (run  python train_for_user.py  to train the model)")
 
     # Pre-load the default player
     default_user = config.CHESS_COM_USERNAME

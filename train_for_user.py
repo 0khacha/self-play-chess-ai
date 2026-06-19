@@ -4,12 +4,14 @@ Train a clone model for a specific Chess.com username.
 Usage:
     python train_for_user.py                    # trains for default (0khacha)
     python train_for_user.py --user hikaru      # trains for any username
+    python train_for_user.py --user hikaru --resume  # resume from checkpoint
 
 The trained model is saved to:
     output/models/clone_<username>.pt
 
 It is automatically used by CloneAgent when that username is loaded.
 """
+from __future__ import annotations
 
 import argparse
 import os
@@ -30,6 +32,8 @@ def main():
                         help="Max training epochs (default: 40)")
     parser.add_argument("--lr", type=float, default=5e-4,
                         help="Learning rate (default: 5e-4)")
+    parser.add_argument("--resume", action="store_true",
+                        help="Resume training from existing checkpoint")
     args = parser.parse_args()
 
     username = args.user.strip().lower()
@@ -44,6 +48,7 @@ def main():
     print("=" * 60)
     print(f"  Device   : {config.DEVICE}")
     print(f"  Save to  : {model_path}")
+    print(f"  Resume   : {args.resume}")
     print("=" * 60)
     print()
 
@@ -96,11 +101,26 @@ def main():
 
     # ── Step 4: Train ────────────────────────────────────────────────────
     print("Step 4/4 — Training model...")
+    import torch
     from model.network   import ChessStyleNetwork
     from training.trainer import Trainer
 
     model = ChessStyleNetwork.from_config()
-    print(f"  Parameters: {model.count_parameters():,}\n")
+    print(f"  Parameters: {model.count_parameters():,}")
+
+    # Resume from checkpoint if requested
+    start_epoch_extra = {}
+    if args.resume and os.path.exists(model_path):
+        print(f"  Resuming from {model_path}...")
+        ckpt = torch.load(model_path, map_location=config.DEVICE, weights_only=False)
+        state = ckpt.get("model_state_dict", ckpt) if isinstance(ckpt, dict) else ckpt
+        model.load_state_dict(state, strict=False)
+        start_epoch_extra = {"resumed_from": model_path}
+        print("  Checkpoint loaded successfully.\n")
+    elif args.resume:
+        print(f"  No checkpoint found at {model_path} — training from scratch.\n")
+    else:
+        print()
 
     trainer = Trainer(
         model        = model,
@@ -112,16 +132,31 @@ def main():
         patience     = 10,
         checkpoint_name = model_name,
     )
-    trainer.train()
+    history = trainer.train()
 
     # ── Done ─────────────────────────────────────────────────────────────
     elapsed = time.time() - t0
+
+    # Final summary
+    best = min(history, key=lambda r: r["val_loss"]) if history else {}
+
     print()
     print("=" * 60)
-    print(f"  Done in {elapsed:.0f}s ({elapsed / 60:.1f} min)")
-    print(f"  Model: {model_path}")
+    print(f"  Training Complete")
+    print("=" * 60)
+    print(f"  Time     : {elapsed:.0f}s ({elapsed / 60:.1f} min)")
+    print(f"  Model    : {model_path}")
+    print(f"  Best epoch: {best.get('epoch', '?')}")
+    print(f"  Val loss : {best.get('val_loss', 0):.4f}")
+
+    # Print top-k accuracies
+    for k in getattr(config, "TOP_K_ACCURACIES", [1, 3, 5]):
+        key = f"val_top{k}_acc"
+        if key in best:
+            print(f"  Val top-{k}: {best[key]:.4f} ({best[key] * 100:.1f}%)")
+
     print()
-    print("  The server (play.py) will automatically use this model")
+    print(f"  The server (play.py) will automatically use this model")
     print(f"  when '{username}' is loaded in the UI.")
     print("=" * 60)
     print()

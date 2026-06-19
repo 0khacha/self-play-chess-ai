@@ -1,5 +1,5 @@
 /* ================================================================
-   Play Against Yourself AI — Premium Dark Theme  v4
+   Play Against Yourself AI — Premium Dark Theme  v5
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -83,6 +83,21 @@ body::before {
   padding: 14px 0 10px;
 }
 
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  right: 24px;
+}
+
 .title {
   font-size: 1.55rem;
   font-weight: 800;
@@ -101,6 +116,53 @@ body::before {
   font-size: 0.78rem;
   color: var(--text-dim);
   margin-top: 4px;
+}
+
+/* ── Icon buttons (sound, shortcuts) ── */
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--bg-hover); color: var(--text); }
+.icon-btn.muted { opacity: 0.4; }
+
+/* ── Shortcuts tooltip ── */
+.shortcuts-wrap { position: relative; }
+.shortcuts-tooltip {
+  display: none;
+  position: absolute;
+  top: 42px; right: 0;
+  background: linear-gradient(160deg, #1a1a3a, #12122a);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  min-width: 200px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  z-index: 50;
+  animation: fade .15s ease-out;
+}
+.shortcuts-wrap:hover .shortcuts-tooltip,
+.shortcuts-tooltip.show { display: block; }
+.tooltip-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 10px; }
+.tooltip-row { font-size: 0.8rem; color: var(--text-dim); padding: 3px 0; display: flex; gap: 10px; }
+.tooltip-row kbd {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 1px 7px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent-hi);
+  min-width: 28px;
+  text-align: center;
 }
 
 /* ── Main two-column layout ── */
@@ -214,7 +276,6 @@ body::before {
 /* ── Board wrapper ── */
 .board-wrapper {
   position: relative;
-  /* Fit the available column width; cap at 90% of viewport height */
   width: 100%;
   max-width: min(760px, calc(100vh - 200px));
   aspect-ratio: 1;
@@ -238,6 +299,29 @@ body::before {
   0%,100% { box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.5), 0 0 30px rgba(124,108,240,0.12); }
   50%      { box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.5), 0 0 55px rgba(124,108,240,0.35); }
 }
+
+/* ── Thinking overlay ── */
+.thinking-overlay {
+  display: none;
+  position: absolute;
+  inset: 8px;
+  z-index: 10;
+  background: rgba(0,0,0,0.15);
+  border-radius: 3px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.thinking-overlay.active { display: flex; }
+
+.thinking-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(124,108,240,0.2);
+  border-top-color: var(--accent-hi);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Board grid ── */
 .board {
@@ -265,6 +349,9 @@ body::before {
 .square.last-move.light { background: #cdd26a; }
 .square.last-move.dark  { background: #aaa138; }
 
+.square.premove.light { background: #6aafcd; }
+.square.premove.dark  { background: #3888a0; }
+
 .square.in-check::after {
   content: '';
   position: absolute; inset: 0;
@@ -276,6 +363,9 @@ body::before {
 .square.legal-target { cursor: pointer; }
 .square.legal-target:hover.light { background: #a4c8e8; }
 .square.legal-target:hover.dark  { background: #7aa0c4; }
+
+.square.drag-over.light { background: #a4c8e8; }
+.square.drag-over.dark  { background: #7aa0c4; }
 
 /* ── Pieces ── */
 .piece {
@@ -300,6 +390,8 @@ body::before {
                0 -1px 0 rgba(0,0,0,.2), 0 1px 0 rgba(0,0,0,.2);
 }
 
+.piece.dragging { opacity: 0.3; }
+
 .square.own-piece:hover .piece { transform: scale(1.10); filter: drop-shadow(0 0 7px rgba(255,255,255,.2)); }
 .square.selected .piece        { transform: scale(1.14); filter: drop-shadow(0 2px 8px rgba(0,0,0,.35)); }
 
@@ -308,6 +400,18 @@ body::before {
   0%   { transform: scale(.45); opacity: .3; }
   60%  { transform: scale(1.12); }
   100% { transform: scale(1);   opacity: 1; }
+}
+
+/* ── Drag ghost ── */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: 56px;
+  line-height: 1;
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', sans-serif;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
 }
 
 /* ── Move hints ── */
@@ -571,10 +675,10 @@ body::before {
 }
 .action-btn {
   flex: 1;
-  padding: 12px 10px;
+  padding: 10px 8px;
   border-radius: var(--radius-sm);
   border: none;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -595,6 +699,13 @@ body::before {
   border: 1px solid var(--border);
 }
 .action-btn.secondary:hover { background: var(--bg-hover); color: var(--text); }
+
+.action-btn.danger {
+  background: rgba(248,113,113,0.10);
+  color: var(--danger);
+  border: 1px solid rgba(248,113,113,0.25);
+}
+.action-btn.danger:hover { background: rgba(248,113,113,0.20); border-color: rgba(248,113,113,0.45); }
 
 .action-btn.wide { width: 200px; flex: none; margin: 0 auto; display: block; }
 
@@ -619,6 +730,20 @@ body::before {
   14%     { transform: scale(1.2); }
   28%     { transform: scale(1); }
   42%     { transform: scale(1.15); }
+}
+
+.version-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
 }
 
 /* ── Modals ── */
@@ -677,4 +802,8 @@ body::before {
   .board-col { width: 100%; }
   .panel { width: 100%; max-width: 600px; }
   .two-col-blocks { grid-template-columns: 1fr; }
+  .header-controls { position: static; margin-top: 6px; justify-content: center; }
+  .header-row { flex-wrap: wrap; }
+  .action-btn { min-height: 44px; font-size: 0.85rem; }
+  .seg-btn, .time-btn { min-height: 44px; }
 }

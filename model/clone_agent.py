@@ -21,6 +21,7 @@ from typing import Optional
 import chess
 import requests
 import torch
+import torch.nn.functional as F
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import config
@@ -148,16 +149,34 @@ def _see(board: chess.Board, square: int, attacker_color: chess.Color) -> int:
     if not attackers:
         return 0
 
-    # Pick the least valuable attacker
-    least_sq = min(attackers, key=lambda s: _SEE_VALUE[board.piece_at(s).piece_type])
+    # Pick the least valuable attacker – guard against missing pieces
+    least_sq: Optional[int] = None
+    least_value = 999
+    for sq in attackers:
+        piece = board.piece_at(sq)
+        if piece is None:
+            continue
+        value = _SEE_VALUE.get(piece.piece_type, 100)
+        if value < least_value:
+            least_value = value
+            least_sq = sq
+
+    if least_sq is None:
+        return 0
+
     captured_piece = board.piece_at(square)
     if captured_piece is None:
         return 0
 
-    capture_gain = _SEE_VALUE[captured_piece.piece_type]
+    capture_gain = _SEE_VALUE.get(captured_piece.piece_type, 0)
+
+    # Build the capture move and validate it is pseudo-legal before pushing
+    capture_move = chess.Move(least_sq, square)
+    if not board.is_pseudo_legal(capture_move):
+        return 0
 
     # Simulate the capture
-    board.push(chess.Move(least_sq, square))
+    board.push(capture_move)
     # Recursively: opponent re-captures
     recapture_loss = _see(board, square, not attacker_color)
     board.pop()
@@ -196,6 +215,54 @@ def is_tactically_safe(board: chess.Board, move: chess.Move) -> bool:
 
     board.pop()
     return safe
+
+
+# ---------------------------------------------------------------------------
+# Style detection heuristic
+# ---------------------------------------------------------------------------
+
+def _detect_style(board: chess.Board) -> int:
+    """
+    Detect a playing style based on game phase and board characteristics.
+
+    Returns one of the config style-token constants:
+      - STYLE_NORMAL      (0) – opening phase (fullmove ≤ 15).
+      - STYLE_AGGRESSIVE  (1) – middlegame with attacking potential (opponent
+        king safety is low or many of our pieces target the centre).
+      - STYLE_DEFENSIVE   (2) – endgame (few pieces remaining).
+    """
+    fullmove = board.fullmove_number
+    us = board.turn
+
+    # Count total non-pawn, non-king material for both sides
+    total_pieces = 0
+    our_attackers = 0
+    for sq in chess.SQUARES:
+        piece = board.piece_at(sq)
+        if piece is None or piece.piece_type == chess.KING:
+            continue
+        if piece.piece_type != chess.PAWN:
+            total_pieces += 1
+        # Count our minor / major pieces that could participate in an attack
+        if piece.color == us and piece.piece_type in (
+            chess.KNIGHT, chess.BISHOP, chess.ROOK, chess.QUEEN,
+        ):
+            our_attackers += 1
+
+    # Endgame: few pieces left → Defensive
+    if total_pieces <= 6:
+        return config.STYLE_DEFENSIVE
+
+    # Opening: first ~15 moves → Normal
+    if fullmove <= 15:
+        return config.STYLE_NORMAL
+
+    # Middlegame with significant attacking force → Aggressive
+    if our_attackers >= 3:
+        return config.STYLE_AGGRESSIVE
+
+    # Default middlegame fallback
+    return config.STYLE_NORMAL
 
 
 # ---------------------------------------------------------------------------
@@ -239,7 +306,13 @@ class NeuralPolicy:
 
     def score_moves(self, board: chess.Board) -> list[tuple[chess.Move, float]]:
         """
-        Returns a list of (move, score) for all legal moves, sorted descending.
+        Returns a list of (move, probability) for all legal moves, sorted
+        descending by probability.
+
+        When the model is available, logits are converted to probabilities via
+        softmax with temperature ``config.NEURAL_TEMPERATURE`` for more
+        human-like move sampling.
+
         Falls back to random uniform scores if the model is not available.
         """
         legal = list(board.legal_moves)
@@ -251,22 +324,41 @@ class NeuralPolicy:
         from model.encoding import encode_board_tensor
 
         try:
-            board_t  = encode_board_tensor(board).unsqueeze(0).to(self.device)
-            style_t  = torch.zeros(1, dtype=torch.long, device=self.device)  # "Normal" style
+            board_t = encode_board_tensor(board).unsqueeze(0).to(self.device)
+
+            # Select style token based on game-phase heuristic
+            style_id = _detect_style(board)
+            style_t = torch.tensor([style_id], dtype=torch.long, device=self.device)
 
             with torch.no_grad():
-                logits = self.model(board_t, style_t).squeeze(0)   # (4672,)
+                output = self.model(board_t, style_t)
 
-            # Mask illegal moves
-            scored = []
+            # Handle both tuple output (policy_logits, value) and plain logits
+            if isinstance(output, tuple):
+                logits = output[0].squeeze(0)   # (4672,)
+            else:
+                logits = output.squeeze(0)       # (4672,)
+
+            # Gather logits for legal moves only
+            move_indices: list[int] = []
+            legal_logits: list[float] = []
             for move in legal:
                 try:
-                    idx   = self._move_to_index(move, board)
-                    score = logits[idx].item()
+                    idx = self._move_to_index(move, board)
+                    move_indices.append(idx)
+                    legal_logits.append(logits[idx].item())
                 except Exception:
-                    score = -1e9
-                scored.append((move, score))
+                    move_indices.append(-1)
+                    legal_logits.append(-1e9)
 
+            # Apply temperature-scaled softmax to convert logits → probabilities
+            temperature = getattr(config, "NEURAL_TEMPERATURE", 1.0)
+            legal_logits_t = torch.tensor(legal_logits, dtype=torch.float32)
+            probs = F.softmax(legal_logits_t / temperature, dim=0)
+
+            scored: list[tuple[chess.Move, float]] = [
+                (move, probs[i].item()) for i, move in enumerate(legal)
+            ]
             scored.sort(key=lambda x: x[1], reverse=True)
             return scored
 
@@ -289,7 +381,7 @@ class CloneAgent:
       3. Forced     – if all moves are "blunders", pick the best-scoring one.
     """
 
-    TOP_K = 5   # neural candidates to evaluate for tactical safety
+    TOP_K = config.NEURAL_TOP_K   # neural candidates to evaluate for tactical safety
 
     def __init__(self, player_book: PlayerBook, model_path: str) -> None:
         self.book = player_book

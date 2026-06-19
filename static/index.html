@@ -15,7 +15,24 @@
 
     <!-- ── Header ── -->
     <header class="header">
-      <h1 class="title">♚ Play Against <span class="gradient-text">Yourself</span></h1>
+      <div class="header-row">
+        <h1 class="title">♚ Play Against <span class="gradient-text">Yourself</span></h1>
+        <div class="header-controls">
+          <button class="icon-btn" id="sound-toggle" aria-label="Toggle sound" title="Toggle sound (M)">🔊</button>
+          <div class="shortcuts-wrap">
+            <button class="icon-btn" id="shortcuts-btn" aria-label="Keyboard shortcuts" title="Keyboard shortcuts">⌨</button>
+            <div class="shortcuts-tooltip" id="shortcuts-tooltip">
+              <div class="tooltip-title">Keyboard Shortcuts</div>
+              <div class="tooltip-row"><kbd>N</kbd> New game</div>
+              <div class="tooltip-row"><kbd>F</kbd> Flip board</div>
+              <div class="tooltip-row"><kbd>Z</kbd> Undo move</div>
+              <div class="tooltip-row"><kbd>M</kbd> Toggle sound</div>
+              <div class="tooltip-row"><kbd>R</kbd> Resign</div>
+              <div class="tooltip-row"><kbd>Esc</kbd> Deselect</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <p class="subtitle">Challenge the AI clone of any Chess.com player</p>
     </header>
 
@@ -41,6 +58,9 @@
         <!-- Board -->
         <div class="board-wrapper" id="board-wrapper">
           <div class="board" id="board"></div>
+          <div class="thinking-overlay" id="thinking-overlay">
+            <div class="thinking-spinner"></div>
+          </div>
         </div>
 
         <!-- Human player bar -->
@@ -112,8 +132,13 @@
 
         <!-- Actions -->
         <div class="action-row">
-          <button class="action-btn primary" id="new-game">⟳ New Game</button>
-          <button class="action-btn secondary" id="flip-board">↕ Flip</button>
+          <button class="action-btn primary" id="new-game" title="New Game (N)">⟳ New Game</button>
+          <button class="action-btn secondary" id="flip-board" title="Flip Board (F)">↕ Flip</button>
+        </div>
+        <div class="action-row">
+          <button class="action-btn secondary" id="undo-btn" title="Undo (Z)">↩ Undo</button>
+          <button class="action-btn danger" id="resign-btn" title="Resign (R)">⚑ Resign</button>
+          <button class="action-btn secondary" id="export-pgn" title="Export PGN">📋 PGN</button>
         </div>
 
       </aside>
@@ -123,6 +148,7 @@
     <footer class="footer">
       Developed with <span class="heart">♥</span> by
       <a href="https://github.com/0khacha" target="_blank" rel="noopener">0khacha</a>
+      <span class="version-badge">v2.0.0</span>
     </footer>
   </div>
 

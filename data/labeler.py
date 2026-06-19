@@ -5,11 +5,12 @@ Two labelling modes are supported:
 
 * **Heuristic-only** (``config.STOCKFISH_PATH is None``): uses pure
   python-chess logic to classify moves as aggressive, defensive, or normal.
-* **Stockfish-enhanced** (``config.STOCKFISH_PATH`` is set): combines engine
-  evaluation with positional heuristics for higher accuracy.
+* **Stockfish-enhanced** (``config.STOCKFISH_PATH`` is set and binary exists):
+  combines engine evaluation with positional heuristics for higher accuracy.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Optional
 
@@ -67,7 +68,7 @@ def _relative_rank(square: int, color: chess.Color) -> int:
 
 
 def _is_on_own_half(square: int, color: chess.Color) -> bool:
-    """True if the square is on ranks 14 from *color*'s perspective."""
+    """True if the square is on ranks 1–4 from *color*'s perspective."""
     return _relative_rank(square, color) <= 3
 
 
@@ -196,22 +197,32 @@ def _label_heuristic(record: GameRecord) -> int:
 # -----------------------------------------------------------------------------
 
 def _init_stockfish():
-    """Initialise and return a Stockfish engine instance via ``chess.engine``."""
+    """Initialise and return a Stockfish engine instance via ``chess.engine``.
+
+    Returns None if the engine cannot be started.
+    """
     import chess.engine  # imported lazily so users without stockfish don't pay
 
-    engine = chess.engine.SimpleEngine.popen_uci(config.STOCKFISH_PATH)
-    engine.configure({
-        "Threads": config.STOCKFISH_THREADS,
-        "Hash": config.STOCKFISH_HASH_MB,
-    })
-    logger.info(
-        "Stockfish initialised (%s, depth=%d, threads=%d, hash=%dMB)",
-        config.STOCKFISH_PATH,
-        config.STOCKFISH_DEPTH,
-        config.STOCKFISH_THREADS,
-        config.STOCKFISH_HASH_MB,
-    )
-    return engine
+    try:
+        engine = chess.engine.SimpleEngine.popen_uci(config.STOCKFISH_PATH)
+        engine.configure({
+            "Threads": config.STOCKFISH_THREADS,
+            "Hash": config.STOCKFISH_HASH_MB,
+        })
+        logger.info(
+            "Stockfish initialised (%s, depth=%d, threads=%d, hash=%dMB)",
+            config.STOCKFISH_PATH,
+            config.STOCKFISH_DEPTH,
+            config.STOCKFISH_THREADS,
+            config.STOCKFISH_HASH_MB,
+        )
+        return engine
+    except Exception as exc:
+        logger.warning(
+            "Failed to initialise Stockfish at '%s': %s — falling back to heuristic mode",
+            config.STOCKFISH_PATH, exc,
+        )
+        return None
 
 
 def _eval_score_cp(
@@ -311,7 +322,8 @@ def label_samples(records: list[GameRecord]) -> list[LabeledSample]:
     """Assign a style label to every record.
 
     Automatically selects **Mode A** (heuristic) or **Mode B** (Stockfish)
-    based on whether ``config.STOCKFISH_PATH`` is configured.
+    based on whether ``config.STOCKFISH_PATH`` is configured and the binary
+    is accessible.
 
     Parameters
     ----------
@@ -323,12 +335,20 @@ def label_samples(records: list[GameRecord]) -> list[LabeledSample]:
     list[LabeledSample]
         One labelled sample per input record.
     """
-    use_stockfish = config.STOCKFISH_PATH is not None
+    # Determine labelling mode: only use Stockfish if path is set AND binary exists
+    use_stockfish = (
+        config.STOCKFISH_PATH is not None
+        and os.path.isfile(config.STOCKFISH_PATH)
+    )
     engine = None
 
     if use_stockfish:
         logger.info("Labelling with Stockfish-enhanced mode (Mode B)")
         engine = _init_stockfish()
+        if engine is None:
+            # init failed — fall back gracefully
+            use_stockfish = False
+            logger.info("Falling back to heuristic-only mode (Mode A)")
     else:
         logger.info("Labelling with heuristic-only mode (Mode A)")
 
@@ -369,7 +389,7 @@ def label_samples(records: list[GameRecord]) -> list[LabeledSample]:
                 pass
 
     logger.info(
-        "Labelling complete  %d samples "
+        "Labelling complete — %d samples "
         "(Normal=%d, Aggressive=%d, Defensive=%d, errors=%d)",
         len(samples),
         label_counts[config.STYLE_NORMAL],

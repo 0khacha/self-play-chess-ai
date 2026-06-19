@@ -31,6 +31,10 @@ output/raw/*.json
 output/logs/*.log
 output/logs/*.csv
 output/logs/*.png
+output/games/*.pgn
+
+# --- Gemini agent ----------------------------------------------------
+.gemini/
 
 # --- IDE / Editor ----------------------------------------------------
 .idea/

@@ -1,10 +1,26 @@
 """
 Shared utility functions for the chess AI project.
 """
+from __future__ import annotations
+
 import os
 import logging
 import datetime
 import chess
+
+import config
+
+
+def get_version() -> str:
+    """Return the current project version string."""
+    return getattr(config, "VERSION", "0.0.0")
+
+
+def ensure_directories() -> None:
+    """Create all required output directories."""
+    for d in [config.OUTPUT_DIR, config.MODELS_DIR, config.GAMES_DIR,
+              config.LOGS_DIR, config.RAW_DATA_DIR]:
+        os.makedirs(d, exist_ok=True)
 
 
 def setup_logging(name: str = "chess_ai", log_dir: str = None) -> logging.Logger:

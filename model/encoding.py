@@ -1,9 +1,11 @@
 """
 Board and move encoding for the chess neural network.
 
-Board encoding: 18 planes x 8x8 (perspective-relative)
+Board encoding: 21 planes x 8x8 (perspective-relative)
 Move encoding: AlphaZero-style 4672 move vocabulary (64 squares x 73 move types)
 """
+from __future__ import annotations
+
 import chess
 import numpy as np
 import torch
@@ -47,20 +49,23 @@ def _flip_square(sq: int) -> int:
 
 def encode_board(board: chess.Board) -> np.ndarray:
     """
-    Encode a chess board as an 18x8x8 float32 tensor.
+    Encode a chess board as a 21x8x8 float32 tensor.
     Uses perspective-relative encoding (current player's POV).
 
     Planes:
         0-5:   Current player's pieces (P, N, B, R, Q, K)
         6-11:  Opponent's pieces (P, N, B, R, Q, K)
-        12:    Constant 1s (side to move  always current player)
+        12:    Constant 1s (side to move — always current player)
         13:    Current player kingside castling
         14:    Current player queenside castling
         15:    Opponent kingside castling
         16:    Opponent queenside castling
         17:    En passant square
+        18:    Attack map — squares attacked by current player
+        19:    Defense map — squares attacked by opponent
+        20:    Last move — to-square of the most recent move
     """
-    planes = np.zeros((18, 8, 8), dtype=np.float32)
+    planes = np.zeros((21, 8, 8), dtype=np.float32)
 
     us = board.turn
     them = not us
@@ -96,6 +101,28 @@ def encode_board(board: chess.Board) -> np.ndarray:
             ep_sq = _flip_square(ep_sq)
         r, f = chess.square_rank(ep_sq), chess.square_file(ep_sq)
         planes[17, r, f] = 1.0
+
+    # Plane 18: attack map — squares attacked by current player
+    for sq in chess.SQUARES:
+        if board.is_attacked_by(us, sq):
+            mapped_sq = _flip_square(sq) if us == chess.BLACK else sq
+            r, f = chess.square_rank(mapped_sq), chess.square_file(mapped_sq)
+            planes[18, r, f] = 1.0
+
+    # Plane 19: defense map — squares attacked by opponent
+    for sq in chess.SQUARES:
+        if board.is_attacked_by(them, sq):
+            mapped_sq = _flip_square(sq) if us == chess.BLACK else sq
+            r, f = chess.square_rank(mapped_sq), chess.square_file(mapped_sq)
+            planes[19, r, f] = 1.0
+
+    # Plane 20: last move — to-square of the most recent move
+    if board.move_stack:
+        last_to = board.move_stack[-1].to_square
+        if us == chess.BLACK:
+            last_to = _flip_square(last_to)
+        r, f = chess.square_rank(last_to), chess.square_file(last_to)
+        planes[20, r, f] = 1.0
 
     return planes
 
